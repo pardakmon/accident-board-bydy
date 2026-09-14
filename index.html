@@ -476,6 +476,12 @@ function generateBoard(){
   });
 
   render();
+  
+  // 변경점: 표 생성 버튼을 눌렀을 때만 서버에 전송합니다.
+  if (typeof window.saveState === 'function') {
+      window.saveState();
+  }
+  
   document.getElementById('backToBoardBtn').style.display='inline-block';
   showBoardScreen();
 }
@@ -613,6 +619,11 @@ function saveEditor(){
   vehicles[editingIdx].entrap = document.getElementById('m_entrap').checked;
   closeEditor();
   render();
+  
+  // 변경점: 모달창에서 저장을 눌렀을 때만 서버로 전송합니다.
+  if (typeof window.saveState === 'function') {
+      window.saveState();
+  }
 }
 
 window.__cellClick = function(idx){
@@ -711,10 +722,7 @@ function render(){
   html += `</tr></tbody></table>`;
   document.getElementById('boardHolder').innerHTML = html;
   
-  // 파이어베이스로 데이터 전송
-  if (typeof window.saveState === 'function') {
-      window.saveState();
-  }
+  // 변경점: 여기서 무조건 저장하던 코드를 삭제했습니다. (깜빡거림 해결)
 }
 
 // 8. 파이어베이스 데이터 쓰기 (서버로 전송)
@@ -752,7 +760,6 @@ boardRef.on('value', (snapshot) => {
       note.textContent = `파이어베이스 실시간 동기화 됨 · ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`;
     }
   } else {
-    // 서버가 비어있을 경우 (최초 접속 시)
     if(setupVehicles.length === 0){ syncSetupVehicles(2); }
     render();
   }
