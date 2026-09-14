@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>교통사고 차량별 현황판</title>
+<style>
+  :root{
+    --ink:#0f172a;
+    --line:#cbd5e1;
+    --line-soft:#94a3b8;
+    --origin:#dc2626;      /* 화재발생 빨강 */
+    --rollover:#7c3aed;    /* 전복 보라색 */
+    --entrap:#2563eb;      /* 끼임 파란색 */
+    --evac:#16a34a;        /* 경상 초록/노랑계열 */
+    --rescue:#e11d48;      /* 중상 적색 */
+    --locked:#475569;      /* 사망/DOA 짙은회색 */
+    --normal:#334155;
+    --panel-bg:#ffffff;
+    --panel-border:#e2e8f0;
+    --accent:#ea580c;      /* 오렌지 계열 포인트 */
+    --navy:#1e293b;        /* 짙은 슬레이트 네이비 */
+    --gold:#f59e0b;
+  }
+  *{box-sizing:border-box;}
+
+  body{
+    font-family:"Malgun Gothic","맑은 고딕",sans-serif;
+    background:#f1f5f9;
+    margin:0;
+    padding:24px;
+    color:var(--ink);
+    position: relative;
+    z-index: 0;
+  }
+
+  body::before {
+    content: "영등포소방서";
+    position: fixed;
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10vmin;
+    font-weight: 900;
+    color: #1e293b;
+    opacity: 0.08;
+    z-index: 9999;
+    pointer-events: none;
+    letter-spacing: 15px;
+    white-space: nowrap;
+  }
+
+  .wrap{max-width:1200px;margin:0 auto;}
+  h1{font-size:20px;margin:0 0 16px;color:var(--navy);}
+  .panel{
+    background:var(--panel-bg);
+    border:1px solid var(--panel-border);
+    border-radius:12px;
+    padding:18px 20px;
+    margin-bottom:18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .panel h2{font-size:15px;margin:0 0 12px;color:var(--accent);}
+  .row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:12px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:12px;color:#64748b;font-weight:600;}
+  .field input{
+    padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;width:140px;
+    outline:none; transition:border-color 0.2s;
+  }
+  .field input:focus{border-color:var(--accent);}
+  .field input.wide{width:260px;}
+
+  .v-setup-list { display:flex; flex-direction:column; gap:12px; width:100%; margin-top:6px; }
+  .v-setup-row { 
+    display:flex; flex-direction:column; gap:8px; background:#f8fafc; 
+    padding:14px; border-radius:8px; border:1px solid #e2e8f0;
+  }
+  .v-setup-header { font-weight:800; color:var(--navy); font-size:14.5px; border-bottom:1px solid #cbd5e1; padding-bottom:6px; margin-bottom:4px; }
+  .v-setup-inputs { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .v-setup-inputs > div { display:flex; align-items:center; gap:6px; }
+  .v-setup-row select, .v-setup-row input[type=text], .v-setup-row input[type=number] {
+    padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; outline:none;
+  }
+  .v-setup-row select:focus, .v-setup-row input:focus { border-color:var(--accent); }
+
+  button{
+    padding:10px 16px;border:none;border-radius:8px;background:var(--accent);
+    color:#fff;font-size:13px;cursor:pointer;font-weight:700;
+    transition:background 0.2s, transform 0.1s;
+    box-shadow: 0 2px 4px rgba(234,88,12,0.2);
+    -webkit-tap-highlight-color: transparent; 
+  }
+  button:active{transform:scale(0.98);}
+  button.secondary{
+    background:#f8fafc;color:var(--navy);border:1px solid #cbd5e1;box-shadow:none;
+  }
+  button.secondary:hover{background:#f1f5f9;border-color:#94a3b8;}
+  button.danger{
+    background:#fff1f2;color:var(--rescue);border:1px solid #fecdd3;box-shadow:none;
+  }
+  button.danger:hover{background:#ffe4e6;border-color:#fda4af;}
+  button.small{padding:6px 10px;font-size:11.5px;}
+
+  .stat-cards{ display:flex; gap:12px; margin:4px 0 16px; }
+  .stat-card{
+    flex:1;text-align:center;border-radius:12px;padding:18px 10px 15px;
+    background:rgba(255, 255, 255, 0.9); border:1px solid var(--panel-border);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+  }
+  .stat-card .num{ font-size:36px;font-weight:900;line-height:1; }
+  .stat-card .label{ font-size:13.5px;color:#64748b;margin-top:8px;font-weight:700; }
+  .stat-card.total .num{color:var(--navy);}
+  .stat-card.severe .num{color:var(--rescue);}
+  .stat-card.mild .num{color:#d97706;}
+  .stat-card.dead .num{color:var(--locked);}
+  .stat-card.total{border-top:4px solid var(--navy);}
+  .stat-card.severe{border-top:4px solid var(--rescue);}
+  .stat-card.mild{border-top:4px solid #f59e0b;}
+  .stat-card.dead{border-top:4px solid var(--locked);}
+
+  .board-header{
+    display:flex;align-items:center;gap:16px;margin-bottom:14px;
+    background:linear-gradient(135deg, var(--navy), #334155);
+    padding:16px 20px;border-radius:14px; box-shadow:0 4px 12px rgba(15,23,42,0.2);
+  }
+  .board-header .icon-badge{
+    width:60px;height:60px;border-radius:50%;flex-shrink:0; background:rgba(255,255,255,0.1);
+    border:2px solid rgba(255,255,255,0.2); display:flex;align-items:center;justify-content:center;
+  }
+  .board-header .icon-badge svg{width:36px;height:36px; fill:#fff;}
+  .board-header-text{text-align:left;}
+  .board-title{font-size:22px;font-weight:800;color:#fff;min-height:24px;}
+  .board-subtitle{font-size:13px;color:#cbd5e1;margin-top:4px;font-weight:600;letter-spacing:0.5px;}
+
+  .legend{display:flex;justify-content:flex-end;gap:12px;margin-bottom:8px;font-size:12px;font-weight:600;flex-wrap:wrap;}
+  .legend span{display:inline-flex;align-items:center;gap:4px;}
+  .swatch{width:16px;height:16px;display:inline-block;border-radius:4px;}
+
+  #boardHolder{
+    overflow-x:auto;-webkit-overflow-scrolling:touch;
+    border-radius:12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  }
+  table.board{ border-collapse:collapse;background:rgba(255, 255, 255, 0.95); }
+  table.board.fit-table{width:100%;table-layout:fixed;}
+  table.board.scroll-table{width:max-content;min-width:600px;table-layout:auto;}
+  table.board td, table.board th{
+    border:1px solid var(--line);text-align:center;vertical-align:top;
+    padding:14px 12px;font-size:13.5px;overflow-wrap:break-word;
+  }
+  table.board.tier-lg td, table.board.tier-lg th{padding:16px 14px;font-size:15px;}
+  table.board.tier-md td, table.board.tier-md th{padding:14px 12px;font-size:14px;}
+  table.board.tier-sm td, table.board.tier-sm th{padding:10px 8px;font-size:12.5px;}
+
+  td.floor-cell{
+    font-weight:800;font-size:15px;background:#f8fafc;width:80px;
+    color:var(--navy); vertical-align:middle; line-height:1.4;
+  }
+  td.unit-cell{cursor:pointer; transition: background 0.15s; min-width: 220px;}
+  td.unit-cell:hover{background:#f1f5f9;}
+
+  .car-header { border-bottom:2px solid var(--navy); padding-bottom:8px; margin-bottom:12px; text-align:left; }
+  .car-plate { font-size:18px; font-weight:900; color:var(--navy); margin-bottom:4px; }
+  .car-info-badges { display:flex; gap:6px; flex-wrap:wrap; }
+  .car-badge { background:#e2e8f0; color:#334155; font-size:11.5px; padding:3px 8px; border-radius:12px; font-weight:700; }
+  .car-badge.fuel { background:#dbeafe; color:#1e40af; }
+
+  .passenger-list-view { text-align:left; display:flex; flex-direction:column; gap:8px; }
+  .p-view-item { background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:8px; font-size:12.5px; line-height:1.4; }
+  .p-view-item strong { color:#0f172a; font-size:13.5px;}
+  .p-view-item .p-status-severe { color:var(--rescue); font-weight:800; }
+  .p-view-item .p-status-mild { color:#d97706; font-weight:800; }
+  .p-view-item .p-status-dead { color:var(--locked); font-weight:800; }
+  .p-view-item .p-status-normal { color:#64748b; font-weight:600; }
+
+  .origin-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;background:var(--origin);border-radius:6px;padding:4px 8px;margin-top:12px; font-size:12.5px;}
+  .rollover-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;margin-top:6px;font-size:12.5px;background:var(--rollover);border-radius:6px;padding:4px 8px;}
+  .entrap-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;margin-top:6px;font-size:12.5px;background:var(--entrap);border-radius:6px;padding:4px 8px;}
+
+  .legend .swatch.origin-sw{background:var(--origin);}
+  .legend .swatch.rollover-sw{background:var(--rollover);}
+  .legend .swatch.entrap-sw{background:var(--entrap);}
+
+  #footNotes{margin-top:16px;font-size:13.5px;line-height:1.7;color:#475569;font-weight:600;}
+  .toolbar{display:flex;gap:10px;margin-top:18px;justify-content:flex-end;}
+  .empty-hint{color:#94a3b8;font-size:14px;text-align:center;padding:40px 0;font-weight:600;}
+  .credit-line{text-align:center;font-size:12px;color:#94a3b8;margin:20px 0 10px;letter-spacing:0.5px;font-weight:600;}
+
+  /* modal */
+  .overlay{
+    position:fixed;inset:0;background:rgba(15,23,42,0.6);
+    display:flex;align-items:center;justify-content:center;z-index:10000;
+    backdrop-filter: blur(2px);
+  }
+  .modal{
+    background:#fff;border-radius:14px;padding:24px;width:95vw; max-width:420px;
+    box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal h3{margin:0 0 16px;font-size:18px;color:var(--navy);font-weight:800; border-bottom:2px solid var(--accent); padding-bottom:8px;}
+  .modal label{font-size:11.5px;color:#64748b;display:block;margin-bottom:4px;font-weight:700;}
+  .modal select, .modal input[type=text], .modal input[type=number], .modal input[type=date]{
+    width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13.5px;
+    outline:none; transition:border-color 0.2s; height: 38px;
+  }
+  .modal select:focus, .modal input:focus{border-color:var(--accent);}
+
+  .p-form-card { background:#f1f5f9; border:1px solid #cbd5e1; border-radius:10px; padding:14px; margin-bottom:12px; }
+  .p-form-header { font-weight:800; color:var(--navy); margin-bottom:10px; font-size:14.5px; display:flex; justify-content:space-between;}
+  .p-form-row { display:flex; gap:8px; margin-bottom:10px; }
+  .p-form-row > div { flex:1; } 
+  .p-form-row .flex-sm { flex: 0.8; }
+  .p-form-row .flex-lg { flex: 1.2; }
+
+  .modal .checks{display:flex;gap:12px;font-size:13.5px;align-items:center; margin-bottom:16px; flex-wrap:wrap;}
+  .modal .checks label{display:flex;align-items:center;gap:6px;margin:0;font-weight:700;cursor:pointer; flex-direction:row;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px; position:sticky; bottom:0; background:#fff; padding-top:10px; border-top:1px solid #e2e8f0;}
+  .stepper-row{display:flex;align-items:center;gap:8px;}
+  .setup-stepper{width:150px;}
+  .setup-stepper input{width:60px;flex:none; pointer-events:none; background-color:#f8fafc; text-align:center;}
+  .step-btn{
+    width:36px;height:36px;padding:0;font-size:18px;line-height:1;border-radius:8px;
+    background:var(--navy);color:#fff;flex-shrink:0;
+  }
+
+  @media (orientation: landscape) and (max-height: 600px) {
+    body { padding: 10px; }
+    .panel { padding: 12px 14px; margin-bottom: 12px; }
+    .stat-cards { margin: 2px 0 10px; }
+    .stat-card { padding: 10px 8px; }
+    .stat-card .num { font-size: 26px; }
+    .stat-card .label { font-size: 11.5px; margin-top: 4px; }
+    .board-header { padding: 10px 14px; margin-bottom: 10px; }
+    .board-title { font-size: 18px; }
+    .board-header .icon-badge { width: 44px; height: 44px; }
+    .board-header .icon-badge svg { width: 26px; height: 26px; }
+    table.board td { padding: 8px; }
+    td.unit-cell { min-width: 170px; } 
+    .car-plate { font-size: 15px; }
+    .p-view-item { font-size: 11.5px; padding: 6px; }
+    .p-view-item strong { font-size: 12.5px; }
+  }
+
+  @media (max-width: 640px) and (orientation: portrait){
+    body{padding:12px;}
+    .panel{padding:16px;}
+    .field input, .field input.wide{width:100%;}
+    .stat-cards{flex-wrap:wrap;}
+    .stat-card{min-width:45%; padding:14px 10px 12px;}
+    .v-setup-inputs > div { width:48%; }
+    .v-setup-inputs > div.full-w { width:100%; }
+    .toolbar button{flex:1;}
+  }
+  @media print{
+    body{background:#fff;padding:0;}
+    body::before, body::after {display:none !important;} 
+    .panel, .toolbar, .board-topbar, #setupScreen{display:none !important;}
+    .wrap{max-width:100%;}
+    .board-header{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none;}
+    .stat-card{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none;break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="setupScreen">
+    <h1>교통사고 차량별 현황판 생성기</h1>
+    <div class="panel" id="setupPanel">
+      <h2>① 사고 및 차량 설정</h2>
+      <div class="row">
+        <div class="field" style="width:100%;">
+          <label style="font-size:12px;color:#64748b;font-weight:600;">사건명 / 장소</label>
+          <input type="text" id="accidentName" style="width:100%; max-width:500px;" placeholder="예) 영등포교차로 4중 추돌사고">
+        </div>
+      </div>
+      <div class="row" style="margin-top:16px;">
+        <div class="field">
+          <label style="font-size:12px;color:#64748b;font-weight:600;">관련 차량 대수</label>
+          <div class="stepper-row setup-stepper">
+            <button type="button" class="step-btn" onclick="adjustVehicleCount(-1)">−</button>
+            <input type="text" id="vehicleCount" value="2" readonly tabindex="-1">
+            <button type="button" class="step-btn" onclick="adjustVehicleCount(1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="vehicleSetupList" class="v-setup-list"></div>
+
+      <div class="row" style="margin-top:24px;">
+        <h2 style="width:100%;">② 표 생성</h2>
+        <button type="button" onclick="generateBoard()" style="width:100%; max-width:500px; padding:14px; font-size:15px;">표 생성 (현황판으로 이동)</button>
+        <button type="button" class="secondary" id="backToBoardBtn" style="display:none; width:100%; max-width:500px;" onclick="showBoardScreen()">← 현황판으로 돌아가기</button>
+      </div>
+    </div>
+    <div class="credit-line">제작 영등포소방서 화재조사팀</div>
+  </div>
+
+  <div id="boardScreen" style="display:none;">
+    <div class="board-topbar">
+      <button type="button" class="secondary" onclick="showSetupScreen()">← 설정으로 돌아가기</button>
+    </div>
+    <div class="board-header">
+      <div class="icon-badge" id="iconBadge">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 6.5H17.5L18.5 9.5H5.5L6.5 6.5ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16Z"/>
+        </svg>
+      </div>
+      <div class="board-header-text">
+        <div id="titleLine" class="board-title"></div>
+        <div class="board-subtitle">교통사고 차량별 현황판</div>
+      </div>
+    </div>
+    <div id="summaryCards" class="stat-cards"></div>
+    <div class="legend">
+      <span><span class="swatch origin-sw"></span>🔥 화재발생</span>
+      <span><span class="swatch rollover-sw"></span>🔄 전복</span>
+      <span><span class="swatch entrap-sw"></span>⚙️ 끼임</span>
+    </div>
+
+    <div id="boardHolder"><div class="empty-hint">위 설정을 입력하고 "표 생성"을 누르세요.</div></div>
+
+    <div id="footNotes"></div>
+    <div id="autosaveNote" style="font-size:11px;color:#94a3b8;text-align:right;margin-top:10px;font-weight:600;"></div>
+
+    <div class="toolbar" id="toolbar" style="display:none;">
+      <button type="button" class="secondary" onclick="window.print()">인쇄 / PDF 저장</button>
+      <button type="button" class="danger" onclick="resetAll()">초기화</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== [파이어베이스 SDK (갤럭시 등 안드로이드 완벽 호환용)] ========== -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<!-- ========== [자바스크립트 통합 로직] ========== -->
+<script>
+// 1. 파이어베이스 초기 설정
+const firebaseConfig = {
+  apiKey: "AIzaSyCZYW1_R1_rYa3_Ds83tfBD5AN7XVx7PHc",
+  authDomain: "traffic-accident-bydy.firebaseapp.com",
+  databaseURL: "https://traffic-accident-bydy-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "traffic-accident-bydy",
+  storageBucket: "traffic-accident-bydy.firebasestorage.app",
+  messagingSenderId: "768149389091",
+  appId: "1:768149389091:web:529a780f4115da1e7b9696"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const boardRef = db.ref('accident_board/current');
+
+// 2. 기본 변수 및 옵션 설정
+let vehicles = []; 
+let setupVehicles = []; 
+const SAVE_KEY = 'car_crash_board_v7';
+
+const TYPE_OPTIONS = ['승용', 'SUV', '버스', '택시', '화물', '오토바이', '자전거', '기타'];
+const FUEL_OPTIONS = ['휘발유', '경유', 'LPG', '하이브리드', '전기', '기타'];
+const GENDER_OPTIONS = ['남', '여', '미상'];
+const STATUS_OPTIONS = [
+  {val: 'normal', label: '이상없음'},
+  {val: 'mild', label: '🟡 경상'},
+  {val: 'severe', label: '🔴 중상'},
+  {val: 'dead', label: '⚫ 사망/DOA'}
+];
+
+// 3. 화면 전환 함수
+function showBoardScreen(){
+  document.getElementById('setupScreen').style.display='none';
+  document.getElementById('boardScreen').style.display='block';
+  window.scrollTo(0,0);
+}
+function showSetupScreen(){
+  document.getElementById('setupScreen').style.display='block';
+  document.getElementById('boardScreen').style.display='none';
+  window.scrollTo(0,0);
+}
+
+// 4. 리셋 및 초기화 함수
+function resetAll(){
+  if(!confirm('저장된 데이터를 모두 지우고 초기화할까요?')) return;
+  boardRef.set(null); // 서버 데이터 초기화
+  location.reload();
+}
+
+function adjustVehicleCount(delta){
+  const el = document.getElementById('vehicleCount');
+  let v = (parseInt(el.value)||1) + delta;
+  if(v < 1) v = 1;
+  el.value = v;
+  syncSetupVehicles(v);
+}
+
+function syncSetupVehicles(count){
+  while(setupVehicles.length < count) {
+    setupVehicles.push({ type: '승용', customType: '', fuel: '휘발유', plate: '', passengers: 1 });
+  }
+  setupVehicles.length = count;
+  renderSetupVehicles();
+}
+
+// 5. 차량 설정 렌더링 함수
+function renderSetupVehicles(){
+  const box = document.getElementById('vehicleSetupList');
+  box.innerHTML = setupVehicles.map((v, i) => `
+    <div class="v-setup-row">
+      <div class="v-setup-header">차량 ${i+1}</div>
+      <div class="v-setup-inputs">
+        <div>
+          <label style="margin:0; width:40px; font-size:12px;color:#64748b;font-weight:600;">차종</label>
+          <select onchange="updateSetupVehicle(${i}, 'type', this.value)" style="width:90px;">
+            ${TYPE_OPTIONS.map(opt => `<option value="${opt}" ${v.type===opt?'selected':''}>${opt}</option>`).join('')}
+          </select>
+          ${v.type==='기타' ? `<input type="text" placeholder="직접입력" value="${v.customType}" oninput="updateSetupVehicle(${i}, 'customType', this.value)" style="width:90px;">` : ''}
+        </div>
+        <div>
+          <label style="margin:0; width:40px; font-size:12px;color:#64748b;font-weight:600;">연료</label>
+          <select onchange="updateSetupVehicle(${i}, 'fuel', this.value)" style="width:100px;">
+            ${FUEL_OPTIONS.map(opt => `<option value="${opt}" ${v.fuel===opt?'selected':''}>${opt}</option>`).join('')}
+          </select>
+        </div>
+        <div class="full-w">
+          <label style="margin:0; width:90px; font-size:12px;color:#64748b;font-weight:600;">차량명 및 번호</label>
+          <input type="text" placeholder="예: 쏘나타 12가 3456" value="${v.plate}" oninput="updateSetupVehicle(${i}, 'plate', this.value)" style="flex:1;">
+        </div>
+        <div class="full-w" style="background:#eef2ff; padding:10px; border-radius:6px; margin-top:4px;">
+          <label style="margin:0; flex:1; color:#1e40af; font-size:12px;font-weight:600;">탑승 인원수 (현황판 기입용)</label>
+          <div class="stepper-row">
+            <button type="button" class="step-btn" style="width:30px;height:30px;" onclick="adjSetupPassenger(${i}, -1)">−</button>
+            <input type="number" value="${v.passengers}" readonly style="width:50px; text-align:center; background:#fff;">
+            <button type="button" class="step-btn" style="width:30px;height:30px;" onclick="adjSetupPassenger(${i}, 1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateSetupVehicle(idx, field, value) {
+  setupVehicles[idx][field] = value;
+  if(field === 'type') renderSetupVehicles(); 
+}
+function adjSetupPassenger(idx, delta) {
+  let p = setupVehicles[idx].passengers + delta;
+  if(p < 0) p = 0;
+  setupVehicles[idx].passengers = p;
+  renderSetupVehicles();
+}
+
+function generateBoard(){
+  const count = parseInt(document.getElementById('vehicleCount').value);
+  if(isNaN(count) || count < 1) return;
+
+  const oldVehicles = vehicles.slice();
+
+  vehicles = setupVehicles.map((sv, i) => {
+    let old = oldVehicles[i] || {};
+    let newPersons = (old.persons || []).slice(0, sv.passengers);
+    while(newPersons.length < sv.passengers) {
+      newPersons.push({ name: '', birthDate: '', age: '', gender: '남', status: 'normal', hospital: '' });
+    }
+
+    return {
+      id: i+1,
+      type: sv.type,
+      customType: sv.customType,
+      fuel: sv.fuel,
+      plate: sv.plate || `미상 (차량${i+1})`,
+      passengers: sv.passengers,
+      fire: old.fire || false,
+      rollover: old.rollover || false,
+      entrap: old.entrap || false,
+      persons: newPersons
+    };
+  });
+
+  render();
+  document.getElementById('backToBoardBtn').style.display='inline-block';
+  showBoardScreen();
+}
+
+// 6. 탑승자 에디터 및 모달 함수
+let editingIdx = null;
+
+function calculateAge(val) {
+  if(!val || val.length !== 8 || isNaN(val)) return '';
+  const y = parseInt(val.substring(0,4), 10);
+  const m = parseInt(val.substring(4,6), 10) - 1;
+  const d = parseInt(val.substring(6,8), 10);
+  const today = new Date();
+  const birthDate = new Date(y, m, d);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const mDiff = today.getMonth() - birthDate.getMonth();
+  if (mDiff < 0 || (mDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+  }
+  return age >= 0 ? age : '';
+}
+
+function handleDobChange(pIdx, val) {
+  val = val.replace(/[^0-9]/g, '');
+  vehicles[editingIdx].persons[pIdx].birthDate = val;
+  
+  const inputEl = document.getElementById(`dob_input_${pIdx}`);
+  if(inputEl) inputEl.value = val;
+
+  if(val.length === 8) {
+    const age = calculateAge(val);
+    vehicles[editingIdx].persons[pIdx].age = age;
+    document.getElementById(`age_input_${pIdx}`).value = age;
+  } else {
+    vehicles[editingIdx].persons[pIdx].age = '';
+    document.getElementById(`age_input_${pIdx}`).value = '';
+  }
+}
+
+function openEditor(idx){
+  editingIdx = idx;
+  const v = vehicles[idx];
+
+  const overlay = document.createElement('div');
+  overlay.className='overlay';
+  overlay.id='editorOverlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3>${v.plate} 상세 현황</h3>
+
+      <div class="checks" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
+        <label style="color:var(--origin);"><input type="checkbox" id="m_fire" ${v.fire?'checked':''}> 🔥 화재발생</label>
+        <label style="color:var(--rollover);"><input type="checkbox" id="m_rollover" ${v.rollover?'checked':''}> 🔄 전복</label>
+        <label style="color:var(--entrap);"><input type="checkbox" id="m_entrap" ${v.entrap?'checked':''}> ⚙️ 끼임</label>
+      </div>
+
+      <div style="margin-top:16px;">
+        <label style="font-size:14px; color:var(--navy); border-bottom:1px solid #e2e8f0; padding-bottom:6px; margin-bottom:12px;">탑승자 개별 입력 (${v.passengers}명)</label>
+        <div id="modalPassengerList"></div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="secondary" onclick="closeEditor()">닫기 / 취소</button>
+        <button type="button" onclick="saveEditor()">저장</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  renderModalPassengers();
+}
+
+function renderModalPassengers(){
+  const v = vehicles[editingIdx];
+  const box = document.getElementById('modalPassengerList');
+
+  if(v.persons.length === 0){
+    box.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px;">입력된 탑승 인원이 없습니다. (설정에서 변경 가능)</div>`;
+    return;
+  }
+
+  box.innerHTML = v.persons.map((p, pIdx) => `
+    <div class="p-form-card">
+      <div class="p-form-header">
+        <span>👤 탑승자 ${pIdx+1}</span>
+      </div>
+      <div class="p-form-row">
+        <div class="flex-lg">
+          <label>이름</label>
+          <input type="text" placeholder="이름" value="${p.name}" oninput="updatePerson(${pIdx}, 'name', this.value)">
+        </div>
+        <div class="flex-lg">
+          <label>생년월일</label>
+          <input type="text" inputmode="numeric" maxlength="8" id="dob_input_${pIdx}" placeholder="예)19900101" value="${p.birthDate || ''}" oninput="handleDobChange(${pIdx}, this.value)">
+        </div>
+        <div class="flex-sm">
+          <label>만 나이</label>
+          <input type="text" id="age_input_${pIdx}" placeholder="자동" value="${p.age}" readonly style="background:#e2e8f0; color:#475569;">
+        </div>
+        <div class="flex-sm">
+          <label>성별</label>
+          <select onchange="updatePerson(${pIdx}, 'gender', this.value)">
+            ${GENDER_OPTIONS.map(opt => `<option value="${opt}" ${p.gender===opt?'selected':''}>${opt}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="p-form-row">
+        <div style="flex:1;">
+          <label>부상정도</label>
+          <select onchange="updatePerson(${pIdx}, 'status', this.value)" style="${p.status==='severe'?'color:#e11d48;font-weight:bold;':(p.status==='dead'?'color:#475569;font-weight:bold;':'')}">
+            ${STATUS_OPTIONS.map(opt => `<option value="${opt.val}" ${p.status===opt.val?'selected':''}>${opt.label}</option>`).join('')}
+          </select>
+        </div>
+        <div style="flex:2;">
+          <label>병원이송 기록</label>
+          <input type="text" placeholder="예: 성모병원" value="${p.hospital}" oninput="updatePerson(${pIdx}, 'hospital', this.value)">
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updatePerson(pIdx, field, value){
+  vehicles[editingIdx].persons[pIdx][field] = value;
+}
+
+function closeEditor(){
+  const o = document.getElementById('editorOverlay');
+  if(o) o.remove();
+  editingIdx = null;
+}
+
+function saveEditor(){
+  vehicles[editingIdx].fire = document.getElementById('m_fire').checked;
+  vehicles[editingIdx].rollover = document.getElementById('m_rollover').checked;
+  vehicles[editingIdx].entrap = document.getElementById('m_entrap').checked;
+  closeEditor();
+  render();
+}
+
+window.__cellClick = function(idx){
+  openEditor(idx);
+};
+
+// 7. 메인 화면 그리기 함수
+function render(){
+  document.getElementById('toolbar').style.display='flex';
+  const name = document.getElementById('accidentName').value.trim();
+  document.getElementById('titleLine').textContent = name || '교통사고 현황';
+
+  let totalCount=0, severeCount=0, mildCount=0, deadCount=0;
+
+  vehicles.forEach(v => {
+    (v.persons || []).forEach(p => {
+      totalCount++;
+      if(p.status==='severe') severeCount++;
+      else if(p.status==='mild') mildCount++;
+      else if(p.status==='dead') deadCount++;
+    });
+  });
+
+  document.getElementById('summaryCards').innerHTML = `
+    <div class="stat-card total">
+      <div class="num">${totalCount}</div>
+      <div class="label">총 탑승(명)</div>
+    </div>
+    <div class="stat-card severe">
+      <div class="num">${severeCount}</div>
+      <div class="label">중상(명)</div>
+    </div>
+    <div class="stat-card mild">
+      <div class="num">${mildCount}</div>
+      <div class="label">경상(명)</div>
+    </div>
+    <div class="stat-card dead">
+      <div class="num">${deadCount}</div>
+      <div class="label">사망(명)</div>
+    </div>
+  `;
+
+  const totalCols = vehicles.length;
+  let sizeTier = totalCols <= 3 ? 'tier-lg' : (totalCols <= 5 ? 'tier-md' : 'tier-sm');
+
+  let html = `<table class="board ${sizeTier} scroll-table"><tbody><tr>`;
+  html += `<td class="floor-cell">차량별 현황<br><span style="font-size:11.5px;font-weight:normal;color:#64748b;margin-top:6px;display:inline-block;">(칸 터치시 기록)</span></td>`;
+
+  vehicles.forEach((v, idx) => {
+    const displayType = v.type === '기타' ? (v.customType || '기타') : v.type;
+
+    let pListHtml = '';
+    if(v.persons.length === 0){
+      pListHtml = `<div class="p-view-item" style="color:#94a3b8; text-align:center;">탑승자 0명</div>`;
+    } else {
+      pListHtml = v.persons.map((p, i) => {
+        let statusCls = `p-status-${p.status}`;
+        let statusText = STATUS_OPTIONS.find(opt => opt.val === p.status).label;
+        let pName = p.name || `탑승자${i+1}`;
+        let pAge = p.age ? `${p.age}세` : '';
+        let pGender = p.gender;
+        let pInfo = [pAge, pGender].filter(Boolean).join('/');
+        if(pInfo) pInfo = `(${pInfo})`;
+        let hospHtml = p.hospital ? `<div style="margin-top:3px; color:#1e40af; font-weight:700;">🏥 ${p.hospital}</div>` : '';
+
+        return `
+          <div class="p-view-item">
+            <strong>${pName}</strong> <span style="color:#64748b;">${pInfo}</span><br>
+            <span class="${statusCls}">${statusText}</span>
+            ${hospHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    const fireTag = v.fire ? `<div class="origin-tag">🔥 화재발생</div>` : '';
+    const rolloverTag = v.rollover ? `<div class="rollover-tag">🔄 전복</div>` : '';
+    const entrapTag = v.entrap ? `<div class="entrap-tag">⚙️ 끼임</div>` : '';
+
+    html += `<td class="unit-cell" onclick="__cellClick(${idx})">
+      <div class="car-header">
+        <div class="car-plate">${v.plate}</div>
+        <div class="car-info-badges">
+          <span class="car-badge">${displayType}</span>
+          <span class="car-badge fuel">${v.fuel}</span>
+          <span class="car-badge" style="background:#f1f5f9;">탑승 ${v.passengers}명</span>
+        </div>
+      </div>
+      <div class="passenger-list-view">
+        ${pListHtml}
+      </div>
+      ${fireTag}${rolloverTag}${entrapTag}
+    </td>`;
+  });
+
+  html += `</tr></tbody></table>`;
+  document.getElementById('boardHolder').innerHTML = html;
+  
+  // 파이어베이스로 데이터 전송
+  if (typeof window.saveState === 'function') {
+      window.saveState();
+  }
+}
+
+// 8. 파이어베이스 데이터 쓰기 (서버로 전송)
+window.saveState = function() {
+  try {
+    const state = {
+      accidentName: document.getElementById('accidentName').value,
+      vehicleCount: document.getElementById('vehicleCount').value,
+      vehicles: vehicles,
+      setupVehicles: setupVehicles,
+      savedAt: new Date().toISOString()
+    };
+    boardRef.set(state);
+  } catch(e) {
+    console.error("데이터 저장 실패:", e);
+  }
+};
+
+// 9. 파이어베이스 데이터 읽기 (서버 변경 시 내 화면 자동 업데이트)
+boardRef.on('value', (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    document.getElementById('accidentName').value = data.accidentName || '';
+    document.getElementById('vehicleCount').value = data.vehicleCount || 2;
+    
+    vehicles = data.vehicles || []; 
+    setupVehicles = data.setupVehicles || [];
+
+    if(typeof renderSetupVehicles === 'function') renderSetupVehicles();
+    if(typeof render === 'function') render();
+    
+    const note = document.getElementById('autosaveNote');
+    if(note){
+      const t = new Date();
+      note.textContent = `파이어베이스 실시간 동기화 됨 · ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`;
+    }
+  } else {
+    // 서버가 비어있을 경우 (최초 접속 시)
+    if(setupVehicles.length === 0){ syncSetupVehicles(2); }
+    render();
+  }
+});
+
+// 10. 최초 실행
+window.addEventListener('DOMContentLoaded', ()=>{
+  showBoardScreen(); // 화면 띄우기 (데이터는 파이어베이스가 자동으로 채워줍니다)
+});
+</script>
+</body>
+</html>
