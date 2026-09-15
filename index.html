@@ -272,6 +272,8 @@
     .stat-card{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none;break-inside:avoid;}
   }
 </style>
+<!-- html2canvas 라이브러리 추가 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -353,7 +355,9 @@
     <div id="footNotes"></div>
     <div id="autosaveNote" style="font-size:11px;color:#94a3b8;text-align:right;margin-top:10px;font-weight:600;"></div>
 
-    <div class="toolbar" id="toolbar" style="display:none;">
+    <div class="toolbar" id="toolbar" style="display:none; flex-wrap: wrap;">
+      <!-- 전체 화면 캡처 버튼 추가 -->
+      <button type="button" class="secondary" onclick="captureBoard()" style="color:#10b981; border-color:#34d399;">📷 전체 화면 캡처</button>
       <button type="button" class="secondary" onclick="window.print()">인쇄 / PDF 저장</button>
       <button type="button" class="danger" onclick="resetAll()">초기화</button>
     </div>
@@ -432,6 +436,47 @@ function doLogout() {
   if(confirm("로그아웃 하시겠습니까?")) {
     auth.signOut();
   }
+}
+
+// --- [전체 화면 캡처 로직 추가] ---
+function captureBoard() {
+  const target = document.getElementById('boardScreen');
+  const toolbar = document.getElementById('toolbar');
+  const topbar = document.querySelector('.board-topbar');
+  
+  // 캡처할 때 사진에 나오지 않도록 버튼들을 잠시 숨깁니다.
+  toolbar.style.display = 'none';
+  topbar.style.display = 'none';
+  
+  html2canvas(target, {
+    scale: 2, // 이미지가 선명하게 저장되도록 고화질 설정
+    backgroundColor: "#f1f5f9"
+  }).then(canvas => {
+    // 캡처가 끝나면 버튼들을 다시 보여줍니다.
+    toolbar.style.display = 'flex';
+    topbar.style.display = 'flex';
+    
+    // 캔버스를 이미지 파일로 변환
+    const imgData = canvas.toDataURL('image/png');
+    
+    // 스마트폰에서 쉽게 저장할 수 있도록 모달창(팝업) 띄우기
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.id = 'captureOverlay';
+    overlay.innerHTML = `
+      <div class="modal" style="max-width:95vw; max-height:95vh; display:flex; flex-direction:column; align-items:center; padding:16px;">
+        <h3 style="margin-bottom:8px; font-size:16px; color:#10b981;">📷 캡처 완료!</h3>
+        <p style="font-size:13px; color:#475569; text-align:center; margin-bottom:12px; line-height:1.4;">
+          아래 이미지를 <strong>꾹 누른 후 '사진 앱에 저장'</strong>을 선택하세요.<br>저장된 사진을 네이버웍스에 바로 공유하시면 됩니다.
+        </p>
+        <div style="overflow:auto; max-height:60vh; border:1px solid #cbd5e1; border-radius:8px; width:100%;">
+          <img src="${imgData}" style="width:100%; display:block;">
+        </div>
+        <button type="button" class="secondary" style="margin-top:16px; width:100%;" onclick="document.getElementById('captureOverlay').remove()">닫기</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  });
 }
 
 // --- [현황판 로직] ---
@@ -749,7 +794,6 @@ function startDatabaseListener() {
   });
 }
 
-// 기존 자동실행 부분을 뺍니다 (로그인이 완료되어야만 실행되도록)
 window.addEventListener('DOMContentLoaded', ()=>{
   // 초기 렌더링 대기
 });
