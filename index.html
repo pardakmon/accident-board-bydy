@@ -287,7 +287,6 @@
     .stat-card{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none;break-inside:avoid;}
   }
 </style>
-<!-- html2canvas 라이브러리 추가 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
@@ -306,6 +305,7 @@
     </div>
     <div id="loginError" class="login-error">아이디 또는 비밀번호를 확인해주세요.</div>
     <button type="button" onclick="doLogin()">접속하기</button>
+    <button type="button" class="secondary" onclick="enterSpectatorMode()" style="margin-top:12px;">👀 관전 모드 (읽기 전용)</button>
   </div>
 </div>
 
@@ -407,6 +407,7 @@ const boardRef = db.ref('accident_board/current');
 let vehicles = []; 
 let setupVehicles = []; 
 let isListening = false;
+let isSpectator = false; // 관전 모드 여부 확인 변수
 
 const TYPE_OPTIONS = ['승용', 'SUV', '버스', '택시', '화물', '오토바이', '자전거', '기타'];
 const FUEL_OPTIONS = ['휘발유', '경유', 'LPG', '하이브리드', '전기', '기타'];
@@ -421,8 +422,19 @@ const STATUS_OPTIONS = [
 // --- [인증 및 로그인 처리] ---
 auth.onAuthStateChanged(user => {
   if (user) {
+    isSpectator = false;
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('mainWrap').style.display = 'block';
+    
+    // 정상 로그인 시 버튼 원상복구
+    document.querySelector('.board-topbar').innerHTML = `
+      <button type="button" class="secondary" onclick="showSetupScreen()">← 설정으로 돌아가기</button>
+      <button type="button" class="secondary" onclick="doLogout()" style="color: var(--rescue); border-color: #fecdd3;">로그아웃</button>
+    `;
+    const resetBtn = document.querySelector('button.danger');
+    if(resetBtn) resetBtn.style.display = 'inline-block';
+    document.querySelector('.board-subtitle').innerHTML = '교통사고 차량별 현황판';
+    
     startDatabaseListener();
   } else {
     document.getElementById('loginScreen').style.display = 'flex';
@@ -456,6 +468,26 @@ function doLogout() {
   }
 }
 
+// --- [관전 모드 진입 처리] ---
+function enterSpectatorMode() {
+  isSpectator = true;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainWrap').style.display = 'block';
+  
+  // 관전 모드 전용 UI 적용 (설정/로그아웃 숨기고 '로그인 화면으로' 버튼 띄움)
+  document.querySelector('.board-topbar').innerHTML = '<button type="button" class="secondary" onclick="location.reload()">로그인 화면으로 가기</button>';
+  
+  // 초기화 버튼 숨기기
+  const resetBtn = document.querySelector('button.danger');
+  if(resetBtn) resetBtn.style.display = 'none';
+
+  // 제목 옆에 관전 모드 표시
+  document.querySelector('.board-subtitle').innerHTML = '교통사고 차량별 현황판 <span style="color:#ea580c; font-weight:800;">[관전 모드]</span>';
+
+  startDatabaseListener();
+  showBoardScreen(); // 설정 화면 건너뛰고 바로 현황판으로 이동
+}
+
 // --- [가로/세로 잘림 & 여백 완벽 방지 캡처 로직] ---
 function captureBoard() {
   const captureTarget = document.getElementById('captureTarget');
@@ -475,12 +507,12 @@ function captureBoard() {
 
   boardHolder.style.overflow = 'visible';
   mainWrap.style.maxWidth = 'none'; 
-  captureTarget.style.width = 'max-content'; // 내용물 크기에 쏙 맞게 감싸기
+  captureTarget.style.width = 'max-content'; 
 
   // 약간의 지연(0.1초)을 주어 브라우저가 변경된 레이아웃을 계산하게 함
   setTimeout(() => {
     html2canvas(captureTarget, {
-      scale: 2, // 선명한 고화질
+      scale: 2, 
       backgroundColor: "#f1f5f9",
       width: captureTarget.scrollWidth,
       height: captureTarget.scrollHeight
@@ -734,7 +766,14 @@ function saveEditor(){
   if (typeof window.saveState === 'function') { window.saveState(); }
 }
 
-window.__cellClick = function(idx){ openEditor(idx); };
+window.__cellClick = function(idx){ 
+  // --- [관전 모드에서는 표 클릭 제한] ---
+  if(isSpectator) {
+    alert("관전 모드에서는 기록을 수정할 수 없습니다.");
+    return;
+  }
+  openEditor(idx); 
+};
 
 function render(){
   document.getElementById('toolbar').style.display='flex';
@@ -833,7 +872,7 @@ function startDatabaseListener() {
         note.textContent = `파이어베이스 실시간 동기화 됨 · ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`;
       }
     } else {
-      if(setupVehicles.length === 0){ syncSetupVehicles(2); }
+      if(!isSpectator && setupVehicles.length === 0){ syncSetupVehicles(2); }
       render();
     }
   });
