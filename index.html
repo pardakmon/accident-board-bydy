@@ -9,17 +9,17 @@
     --ink:#0f172a;
     --line:#cbd5e1;
     --line-soft:#94a3b8;
-    --origin:#dc2626;      /* 화재발생 빨강 */
-    --rollover:#7c3aed;    /* 전복 보라색 */
-    --entrap:#2563eb;      /* 끼임 파란색 */
-    --evac:#16a34a;        /* 경상 초록/노랑계열 */
-    --rescue:#e11d48;      /* 중상 적색 */
-    --locked:#475569;      /* 사망/DOA 짙은회색 */
+    --origin:#dc2626;      
+    --rollover:#7c3aed;    
+    --entrap:#2563eb;      
+    --evac:#16a34a;        
+    --rescue:#e11d48;      
+    --locked:#475569;      
     --normal:#334155;
     --panel-bg:#ffffff;
     --panel-border:#e2e8f0;
-    --accent:#ea580c;      /* 오렌지 계열 포인트 */
-    --navy:#1e293b;        /* 짙은 슬레이트 네이비 */
+    --accent:#ea580c;      
+    --navy:#1e293b;        
     --gold:#f59e0b;
   }
   *{box-sizing:border-box;}
@@ -38,9 +38,7 @@
     content: "";
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    
     background-image: url('data:image/png;base64,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)'); 
-    
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 60vmin;
@@ -49,7 +47,7 @@
     pointer-events: none; 
   }
 
-  .wrap{max-width:1200px;margin:0 auto;}
+  .wrap{max-width:1200px;margin:0 auto; position: relative; z-index: 1;}
   h1{font-size:20px;margin:0 0 16px;color:var(--navy);}
   .panel{
     background:var(--panel-bg);
@@ -198,7 +196,7 @@
   }
   .modal h3{margin:0 0 16px;font-size:18px;color:var(--navy);font-weight:800; border-bottom:2px solid var(--accent); padding-bottom:8px;}
   .modal label{font-size:11.5px;color:#64748b;display:block;margin-bottom:4px;font-weight:700;}
-  .modal select, .modal input[type=text], .modal input[type=number], .modal input[type=date]{
+  .modal select, .modal input[type=text], .modal input[type=number], .modal input[type=date], .modal input[type=password], .modal input[type=email]{
     width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13.5px;
     outline:none; transition:border-color 0.2s; height: 38px;
   }
@@ -221,6 +219,21 @@
     width:36px;height:36px;padding:0;font-size:18px;line-height:1;border-radius:8px;
     background:var(--navy);color:#fff;flex-shrink:0;
   }
+
+  /* Login Screen Styles */
+  #loginScreen {
+    position: fixed; inset: 0; background: var(--navy); 
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 20000;
+  }
+  .login-box {
+    background: #fff; padding: 30px; border-radius: 12px; width: 90vw; max-width: 340px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center;
+  }
+  .login-box h2 { margin: 0 0 20px; color: var(--navy); }
+  .login-box .field { margin-bottom: 15px; text-align: left;}
+  .login-box button { width: 100%; padding: 12px; font-size: 15px; margin-top: 10px; }
+  .login-error { color: var(--rescue); font-size: 12px; margin-top: 10px; display: none; font-weight: 600;}
 
   @media (orientation: landscape) and (max-height: 600px) {
     body { padding: 10px; }
@@ -253,7 +266,7 @@
   @media print{
     body{background:#fff;padding:0;}
     body::before, body::after {display:none !important;} 
-    .panel, .toolbar, .board-topbar, #setupScreen{display:none !important;}
+    .panel, .toolbar, .board-topbar, #setupScreen, #loginScreen {display:none !important;}
     .wrap{max-width:100%;}
     .board-header{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none;}
     .stat-card{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none;break-inside:avoid;}
@@ -261,7 +274,25 @@
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<!-- 로그인 화면 -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h2>현황판 로그인</h2>
+    <div class="field">
+      <label>이메일 아이디</label>
+      <input type="email" id="loginEmail" placeholder="team@fire.com">
+    </div>
+    <div class="field">
+      <label>비밀번호</label>
+      <input type="password" id="loginPwd" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <div id="loginError" class="login-error">아이디 또는 비밀번호를 확인해주세요.</div>
+    <button type="button" onclick="doLogin()">접속하기</button>
+  </div>
+</div>
+
+<div class="wrap" id="mainWrap" style="display:none;">
   <div id="setupScreen">
     <h1>교통사고 차량별 현황판 생성기</h1>
     <div class="panel" id="setupPanel">
@@ -295,8 +326,9 @@
   </div>
 
   <div id="boardScreen" style="display:none;">
-    <div class="board-topbar">
+    <div class="board-topbar" style="display: flex; justify-content: space-between;">
       <button type="button" class="secondary" onclick="showSetupScreen()">← 설정으로 돌아가기</button>
+      <button type="button" class="secondary" onclick="doLogout()" style="color: var(--rescue); border-color: #fecdd3;">로그아웃</button>
     </div>
     <div class="board-header">
       <div class="icon-badge" id="iconBadge">
@@ -328,13 +360,13 @@
   </div>
 </div>
 
-<!-- ========== [파이어베이스 SDK (갤럭시 등 안드로이드 완벽 호환용)] ========== -->
+<!-- ========== [파이어베이스 SDK] ========== -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <!-- ========== [자바스크립트 통합 로직] ========== -->
 <script>
-// 1. 파이어베이스 초기 설정
 const firebaseConfig = {
   apiKey: "AIzaSyCZYW1_R1_rYa3_Ds83tfBD5AN7XVx7PHc",
   authDomain: "traffic-accident-bydy.firebaseapp.com",
@@ -346,13 +378,13 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 const db = firebase.database();
 const boardRef = db.ref('accident_board/current');
 
-// 2. 기본 변수 및 옵션 설정
 let vehicles = []; 
 let setupVehicles = []; 
-const SAVE_KEY = 'car_crash_board_v7';
+let isListening = false;
 
 const TYPE_OPTIONS = ['승용', 'SUV', '버스', '택시', '화물', '오토바이', '자전거', '기타'];
 const FUEL_OPTIONS = ['휘발유', '경유', 'LPG', '하이브리드', '전기', '기타'];
@@ -364,7 +396,45 @@ const STATUS_OPTIONS = [
   {val: 'dead', label: '⚫ 사망/DOA'}
 ];
 
-// 3. 화면 전환 함수
+// --- [인증 및 로그인 처리] ---
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainWrap').style.display = 'block';
+    startDatabaseListener();
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('mainWrap').style.display = 'none';
+    if(isListening) {
+      boardRef.off('value');
+      isListening = false;
+    }
+  }
+});
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value;
+  const pwd = document.getElementById('loginPwd').value;
+  document.getElementById('loginError').style.display = 'none';
+  
+  if(!email || !pwd) {
+    document.getElementById('loginError').style.display = 'block';
+    return;
+  }
+  
+  auth.signInWithEmailAndPassword(email, pwd)
+    .catch(error => {
+      document.getElementById('loginError').style.display = 'block';
+    });
+}
+
+function doLogout() {
+  if(confirm("로그아웃 하시겠습니까?")) {
+    auth.signOut();
+  }
+}
+
+// --- [현황판 로직] ---
 function showBoardScreen(){
   document.getElementById('setupScreen').style.display='none';
   document.getElementById('boardScreen').style.display='block';
@@ -376,11 +446,9 @@ function showSetupScreen(){
   window.scrollTo(0,0);
 }
 
-// 4. 리셋 및 초기화 함수
 function resetAll(){
   if(!confirm('저장된 데이터를 모두 지우고 초기화할까요?')) return;
-  boardRef.set(null); // 서버 데이터 초기화
-  location.reload();
+  boardRef.set(null); 
 }
 
 function adjustVehicleCount(delta){
@@ -399,7 +467,6 @@ function syncSetupVehicles(count){
   renderSetupVehicles();
 }
 
-// 5. 차량 설정 렌더링 함수
 function renderSetupVehicles(){
   const box = document.getElementById('vehicleSetupList');
   box.innerHTML = setupVehicles.map((v, i) => `
@@ -424,7 +491,7 @@ function renderSetupVehicles(){
           <input type="text" placeholder="예: 쏘나타 12가 3456" value="${v.plate}" oninput="updateSetupVehicle(${i}, 'plate', this.value)" style="flex:1;">
         </div>
         <div class="full-w" style="background:#eef2ff; padding:10px; border-radius:6px; margin-top:4px;">
-          <label style="margin:0; flex:1; color:#1e40af; font-size:12px;font-weight:600;">탑승 인원수 (현황판 기입용)</label>
+          <label style="margin:0; flex:1; color:#1e40af; font-size:12px;font-weight:600;">탑승 인원수</label>
           <div class="stepper-row">
             <button type="button" class="step-btn" style="width:30px;height:30px;" onclick="adjSetupPassenger(${i}, -1)">−</button>
             <input type="number" value="${v.passengers}" readonly style="width:50px; text-align:center; background:#fff;">
@@ -450,16 +517,13 @@ function adjSetupPassenger(idx, delta) {
 function generateBoard(){
   const count = parseInt(document.getElementById('vehicleCount').value);
   if(isNaN(count) || count < 1) return;
-
   const oldVehicles = vehicles.slice();
-
   vehicles = setupVehicles.map((sv, i) => {
     let old = oldVehicles[i] || {};
     let newPersons = (old.persons || []).slice(0, sv.passengers);
     while(newPersons.length < sv.passengers) {
       newPersons.push({ name: '', birthDate: '', age: '', gender: '남', status: 'normal', hospital: '' });
     }
-
     return {
       id: i+1,
       type: sv.type,
@@ -473,18 +537,12 @@ function generateBoard(){
       persons: newPersons
     };
   });
-
   render();
-  
-  if (typeof window.saveState === 'function') {
-      window.saveState();
-  }
-  
+  if (typeof window.saveState === 'function') { window.saveState(); }
   document.getElementById('backToBoardBtn').style.display='inline-block';
   showBoardScreen();
 }
 
-// 6. 탑승자 에디터 및 모달 함수
 let editingIdx = null;
 
 function calculateAge(val) {
@@ -496,19 +554,15 @@ function calculateAge(val) {
   const birthDate = new Date(y, m, d);
   let age = today.getFullYear() - birthDate.getFullYear();
   const mDiff = today.getMonth() - birthDate.getMonth();
-  if (mDiff < 0 || (mDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-  }
+  if (mDiff < 0 || (mDiff === 0 && today.getDate() < birthDate.getDate())) { age--; }
   return age >= 0 ? age : '';
 }
 
 function handleDobChange(pIdx, val) {
   val = val.replace(/[^0-9]/g, '');
   vehicles[editingIdx].persons[pIdx].birthDate = val;
-  
   const inputEl = document.getElementById(`dob_input_${pIdx}`);
   if(inputEl) inputEl.value = val;
-
   if(val.length === 8) {
     const age = calculateAge(val);
     vehicles[editingIdx].persons[pIdx].age = age;
@@ -522,25 +576,21 @@ function handleDobChange(pIdx, val) {
 function openEditor(idx){
   editingIdx = idx;
   const v = vehicles[idx];
-
   const overlay = document.createElement('div');
   overlay.className='overlay';
   overlay.id='editorOverlay';
   overlay.innerHTML = `
     <div class="modal">
       <h3>${v.plate} 상세 현황</h3>
-
       <div class="checks" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
         <label style="color:var(--origin);"><input type="checkbox" id="m_fire" ${v.fire?'checked':''}> 🔥 화재발생</label>
         <label style="color:var(--rollover);"><input type="checkbox" id="m_rollover" ${v.rollover?'checked':''}> 🔄 전복</label>
         <label style="color:var(--entrap);"><input type="checkbox" id="m_entrap" ${v.entrap?'checked':''}> ⚙️ 끼임</label>
       </div>
-
       <div style="margin-top:16px;">
         <label style="font-size:14px; color:var(--navy); border-bottom:1px solid #e2e8f0; padding-bottom:6px; margin-bottom:12px;">탑승자 개별 입력 (${v.passengers}명)</label>
         <div id="modalPassengerList"></div>
       </div>
-
       <div class="modal-actions">
         <button type="button" class="secondary" onclick="closeEditor()">닫기 / 취소</button>
         <button type="button" onclick="saveEditor()">저장</button>
@@ -554,87 +604,54 @@ function openEditor(idx){
 function renderModalPassengers(){
   const v = vehicles[editingIdx];
   const box = document.getElementById('modalPassengerList');
-
   if(v.persons.length === 0){
-    box.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px;">입력된 탑승 인원이 없습니다. (설정에서 변경 가능)</div>`;
+    box.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px;">입력된 탑승 인원이 없습니다.</div>`;
     return;
   }
-
   box.innerHTML = v.persons.map((p, pIdx) => `
     <div class="p-form-card">
-      <div class="p-form-header">
-        <span>👤 탑승자 ${pIdx+1}</span>
-      </div>
+      <div class="p-form-header"><span>👤 탑승자 ${pIdx+1}</span></div>
       <div class="p-form-row">
-        <div class="flex-lg">
-          <label>이름</label>
-          <input type="text" placeholder="이름" value="${p.name}" oninput="updatePerson(${pIdx}, 'name', this.value)">
-        </div>
-        <div class="flex-lg">
-          <label>생년월일</label>
-          <input type="text" inputmode="numeric" maxlength="8" id="dob_input_${pIdx}" placeholder="예)19900101" value="${p.birthDate || ''}" oninput="handleDobChange(${pIdx}, this.value)">
-        </div>
-        <div class="flex-sm">
-          <label>만 나이</label>
-          <input type="text" id="age_input_${pIdx}" placeholder="자동" value="${p.age}" readonly style="background:#e2e8f0; color:#475569;">
-        </div>
-        <div class="flex-sm">
-          <label>성별</label>
+        <div class="flex-lg"><label>이름</label><input type="text" placeholder="이름" value="${p.name}" oninput="updatePerson(${pIdx}, 'name', this.value)"></div>
+        <div class="flex-lg"><label>생년월일</label><input type="text" inputmode="numeric" maxlength="8" id="dob_input_${pIdx}" placeholder="예)19900101" value="${p.birthDate || ''}" oninput="handleDobChange(${pIdx}, this.value)"></div>
+        <div class="flex-sm"><label>만 나이</label><input type="text" id="age_input_${pIdx}" placeholder="자동" value="${p.age}" readonly style="background:#e2e8f0; color:#475569;"></div>
+        <div class="flex-sm"><label>성별</label>
           <select onchange="updatePerson(${pIdx}, 'gender', this.value)">
             ${GENDER_OPTIONS.map(opt => `<option value="${opt}" ${p.gender===opt?'selected':''}>${opt}</option>`).join('')}
           </select>
         </div>
       </div>
       <div class="p-form-row">
-        <div style="flex:1;">
-          <label>부상정도</label>
+        <div style="flex:1;"><label>부상정도</label>
           <select onchange="updatePerson(${pIdx}, 'status', this.value)" style="${p.status==='severe'?'color:#e11d48;font-weight:bold;':(p.status==='dead'?'color:#475569;font-weight:bold;':'')}">
             ${STATUS_OPTIONS.map(opt => `<option value="${opt.val}" ${p.status===opt.val?'selected':''}>${opt.label}</option>`).join('')}
           </select>
         </div>
-        <div style="flex:2;">
-          <label>병원이송 기록</label>
-          <input type="text" placeholder="예: 성모병원" value="${p.hospital}" oninput="updatePerson(${pIdx}, 'hospital', this.value)">
-        </div>
+        <div style="flex:2;"><label>병원이송 기록</label><input type="text" placeholder="예: 성모병원" value="${p.hospital}" oninput="updatePerson(${pIdx}, 'hospital', this.value)"></div>
       </div>
     </div>
   `).join('');
 }
 
-function updatePerson(pIdx, field, value){
-  vehicles[editingIdx].persons[pIdx][field] = value;
-}
-
-function closeEditor(){
-  const o = document.getElementById('editorOverlay');
-  if(o) o.remove();
-  editingIdx = null;
-}
-
+function updatePerson(pIdx, field, value){ vehicles[editingIdx].persons[pIdx][field] = value; }
+function closeEditor(){ const o = document.getElementById('editorOverlay'); if(o) o.remove(); editingIdx = null; }
 function saveEditor(){
   vehicles[editingIdx].fire = document.getElementById('m_fire').checked;
   vehicles[editingIdx].rollover = document.getElementById('m_rollover').checked;
   vehicles[editingIdx].entrap = document.getElementById('m_entrap').checked;
   closeEditor();
   render();
-  
-  if (typeof window.saveState === 'function') {
-      window.saveState();
-  }
+  if (typeof window.saveState === 'function') { window.saveState(); }
 }
 
-window.__cellClick = function(idx){
-  openEditor(idx);
-};
+window.__cellClick = function(idx){ openEditor(idx); };
 
-// 7. 메인 화면 그리기 함수
 function render(){
   document.getElementById('toolbar').style.display='flex';
   const name = document.getElementById('accidentName').value.trim();
   document.getElementById('titleLine').textContent = name || '교통사고 현황';
 
   let totalCount=0, severeCount=0, mildCount=0, deadCount=0;
-
   vehicles.forEach(v => {
     (v.persons || []).forEach(p => {
       totalCount++;
@@ -645,22 +662,10 @@ function render(){
   });
 
   document.getElementById('summaryCards').innerHTML = `
-    <div class="stat-card total">
-      <div class="num">${totalCount}</div>
-      <div class="label">총 탑승(명)</div>
-    </div>
-    <div class="stat-card severe">
-      <div class="num">${severeCount}</div>
-      <div class="label">중상(명)</div>
-    </div>
-    <div class="stat-card mild">
-      <div class="num">${mildCount}</div>
-      <div class="label">경상(명)</div>
-    </div>
-    <div class="stat-card dead">
-      <div class="num">${deadCount}</div>
-      <div class="label">사망(명)</div>
-    </div>
+    <div class="stat-card total"><div class="num">${totalCount}</div><div class="label">총 탑승(명)</div></div>
+    <div class="stat-card severe"><div class="num">${severeCount}</div><div class="label">중상(명)</div></div>
+    <div class="stat-card mild"><div class="num">${mildCount}</div><div class="label">경상(명)</div></div>
+    <div class="stat-card dead"><div class="num">${deadCount}</div><div class="label">사망(명)</div></div>
   `;
 
   const totalCols = vehicles.length;
@@ -671,7 +676,6 @@ function render(){
 
   vehicles.forEach((v, idx) => {
     const displayType = v.type === '기타' ? (v.customType || '기타') : v.type;
-
     let pListHtml = '';
     if(v.persons.length === 0){
       pListHtml = `<div class="p-view-item" style="color:#94a3b8; text-align:center;">탑승자 0명</div>`;
@@ -685,14 +689,7 @@ function render(){
         let pInfo = [pAge, pGender].filter(Boolean).join('/');
         if(pInfo) pInfo = `(${pInfo})`;
         let hospHtml = p.hospital ? `<div style="margin-top:3px; color:#1e40af; font-weight:700;">🏥 ${p.hospital}</div>` : '';
-
-        return `
-          <div class="p-view-item">
-            <strong>${pName}</strong> <span style="color:#64748b;">${pInfo}</span><br>
-            <span class="${statusCls}">${statusText}</span>
-            ${hospHtml}
-          </div>
-        `;
+        return `<div class="p-view-item"><strong>${pName}</strong> <span style="color:#64748b;">${pInfo}</span><br><span class="${statusCls}">${statusText}</span>${hospHtml}</div>`;
       }).join('');
     }
 
@@ -703,15 +700,9 @@ function render(){
     html += `<td class="unit-cell" onclick="__cellClick(${idx})">
       <div class="car-header">
         <div class="car-plate">${v.plate}</div>
-        <div class="car-info-badges">
-          <span class="car-badge">${displayType}</span>
-          <span class="car-badge fuel">${v.fuel}</span>
-          <span class="car-badge" style="background:#f1f5f9;">탑승 ${v.passengers}명</span>
-        </div>
+        <div class="car-info-badges"><span class="car-badge">${displayType}</span><span class="car-badge fuel">${v.fuel}</span><span class="car-badge" style="background:#f1f5f9;">탑승 ${v.passengers}명</span></div>
       </div>
-      <div class="passenger-list-view">
-        ${pListHtml}
-      </div>
+      <div class="passenger-list-view">${pListHtml}</div>
       ${fireTag}${rolloverTag}${entrapTag}
     </td>`;
   });
@@ -720,7 +711,6 @@ function render(){
   document.getElementById('boardHolder').innerHTML = html;
 }
 
-// 8. 파이어베이스 데이터 쓰기 (서버로 전송)
 window.saveState = function() {
   try {
     const state = {
@@ -736,33 +726,32 @@ window.saveState = function() {
   }
 };
 
-// 9. 파이어베이스 데이터 읽기 (서버 변경 시 내 화면 자동 업데이트)
-boardRef.on('value', (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    document.getElementById('accidentName').value = data.accidentName || '';
-    document.getElementById('vehicleCount').value = data.vehicleCount || 2;
-    
-    vehicles = data.vehicles || []; 
-    setupVehicles = data.setupVehicles || [];
-
-    if(typeof renderSetupVehicles === 'function') renderSetupVehicles();
-    if(typeof render === 'function') render();
-    
-    const note = document.getElementById('autosaveNote');
-    if(note){
-      const t = new Date();
-      note.textContent = `파이어베이스 실시간 동기화 됨 · ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`;
+function startDatabaseListener() {
+  isListening = true;
+  boardRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      document.getElementById('accidentName').value = data.accidentName || '';
+      document.getElementById('vehicleCount').value = data.vehicleCount || 2;
+      vehicles = data.vehicles || []; 
+      setupVehicles = data.setupVehicles || [];
+      if(typeof renderSetupVehicles === 'function') renderSetupVehicles();
+      if(typeof render === 'function') render();
+      const note = document.getElementById('autosaveNote');
+      if(note){
+        const t = new Date();
+        note.textContent = `파이어베이스 실시간 동기화 됨 · ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`;
+      }
+    } else {
+      if(setupVehicles.length === 0){ syncSetupVehicles(2); }
+      render();
     }
-  } else {
-    if(setupVehicles.length === 0){ syncSetupVehicles(2); }
-    render();
-  }
-});
+  });
+}
 
-// 10. 최초 실행
+// 기존 자동실행 부분을 뺍니다 (로그인이 완료되어야만 실행되도록)
 window.addEventListener('DOMContentLoaded', ()=>{
-  showBoardScreen(); // 화면 띄우기 (데이터는 파이어베이스가 자동으로 채워줍니다)
+  // 초기 렌더링 대기
 });
 </script>
 </body>
