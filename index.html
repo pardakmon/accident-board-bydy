@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>교통사고 차량별 현황판</title>
+<!-- 🌟 각진 전자시계 느낌을 내기 위한 구글 디지털 폰트 불러오기 -->
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#0f172a;
@@ -152,22 +154,31 @@
   .board-title{font-size:22px;font-weight:800;color:#fff;min-height:24px;}
   .board-subtitle{font-size:13px;color:#cbd5e1;margin-top:4px;font-weight:600;letter-spacing:0.5px;}
 
-  /* 🌟 디지털 시계 디자인 적용 (흰색 글씨, 고정폭 폰트) */
+  /* 🌟 날짜와 시간의 가로 폭을 완벽히 맞추고 정통 디지털 폰트 적용 */
   .header-clock {
-    text-align: right;
+    text-align: center;
     color: #ffffff;
-    font-family: 'Courier New', Courier, monospace;
-    font-weight: 800;
-    font-size: 15px;
-    letter-spacing: 1px;
+    font-family: 'Share Tech Mono', monospace;
     background: rgba(0, 0, 0, 0.3);
     padding: 8px 14px;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     flex-shrink: 0;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    width: 175px; /* 👈 날짜와 시간이 정확히 같은 폭 안에서 정렬되도록 고정 */
   }
-  .header-clock .time-date { font-size: 11.5px; color: #94a3b8; font-weight: 600; margin-bottom: 2px; font-family: "Malgun Gothic", sans-serif; }
+  .header-clock .time-date { 
+    font-size: 13px; 
+    color: #cbd5e1; 
+    margin-bottom: 2px; 
+    font-family: 'Share Tech Mono', monospace; 
+    letter-spacing: 0.5px;
+  }
+  .header-clock .time-main {
+    font-size: 21px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+  }
 
   .legend{display:flex;justify-content:flex-end;gap:12px;margin-bottom:8px;font-size:12px;font-weight:600;flex-wrap:wrap;}
   .legend span{display:inline-flex;align-items:center;gap:4px;}
@@ -382,7 +393,7 @@
         </div>
       </div>
 
-      <!-- 🌟 진한 상단바 (제목 영역 + 우측 디지털 시계) -->
+      <!-- 🌟 진한 상단바 (제목 영역 + 우측 정렬된 디지털 시계) -->
       <div class="board-header">
         <div class="board-header-left">
           <div class="icon-badge" id="iconBadge">
@@ -395,10 +406,10 @@
             <div class="board-subtitle">교통사고 차량별 현황판</div>
           </div>
         </div>
-        <!-- 우측 디지털 시계 배치 -->
+        <!-- 우측 디지털 시계 박스 -->
         <div class="header-clock" id="liveClock">
-          <div class="time-date" id="clockDate">--년 --월 --일 (--)</div>
-          <div id="clockTime">--:--:--</div>
+          <div class="time-date" id="clockDate">--.--.-- (--)</div>
+          <div class="time-main" id="clockTime">--:--:--</div>
         </div>
       </div>
 
@@ -462,7 +473,7 @@ const STATUS_OPTIONS = [
 // --- [실시간 디지털 시계 작동 함수] ---
 function updateLiveClock() {
   const now = new Date();
-  const year = now.getFullYear();
+  const year = String(now.getFullYear()).slice(2); // 연도 뒤 2자리 (깔끔하게)
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const date = String(now.getDate()).padStart(2, '0');
   const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -928,7 +939,7 @@ function startDatabaseListener() {
   boardRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
-      document.getElementById('accidentName').value = data.accidentName ||` 사건명없음 ` ;
+      document.getElementById('accidentName').value = data.accidentName || '';
       document.getElementById('vehicleCount').value = data.vehicleCount || 2;
       vehicles = data.vehicles || []; 
       setupVehicles = data.setupVehicles || [];
