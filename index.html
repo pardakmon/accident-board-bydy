@@ -45,14 +45,14 @@
   
   /* 🌟 확실하게 캡처되는 워터마크 전용 구역 */
   .watermark-bg {
-    position: absolute;
+    position: absolute !important; /* 👈 다른 규칙에 밀리지 않도록 !important 추가 */
     top: 0; left: 0; right: 0; bottom: 0;
     background-image: url('seoulfire.png'); 
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 50%; /* 로고 크기 조절 */
     opacity: 0.15;
-    z-index: 0; 
+    z-index: 0 !important; /* 👈 글자들 밑에 깔리도록 !important 추가 */
     pointer-events: none; 
   }
   
