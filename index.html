@@ -34,7 +34,7 @@
     z-index: 0;
   }
 
-  /* --- 캡처될 알맹이 구역 --- */
+  /* --- 캡처될 알맹이 구역 (워터마크 포함) --- */
   #captureTarget {
     position: relative;
     background: #f1f5f9;
@@ -43,16 +43,17 @@
     overflow: hidden; 
   }
   
-  /* 🌟 확실하게 캡처되는 워터마크 전용 구역 */
-  .watermark-bg {
-    position: absolute !important; /* 👈 다른 규칙에 밀리지 않도록 !important 추가 */
+  /* 🌟 원래대로 복구 및 캡처 버그 해결 완료 */
+  #captureTarget::before {
+    content: "";
+    position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     background-image: url('seoulfire.png'); 
     background-repeat: no-repeat;
     background-position: center center;
-    background-size: 50%; /* 로고 크기 조절 */
+    background-size: 50%; /* 💡 60vmin 대신 %를 써야 캡처 프로그램이 인식합니다! */
     opacity: 0.15;
-    z-index: 0 !important; /* 👈 글자들 밑에 깔리도록 !important 추가 */
+    z-index: 0; 
     pointer-events: none; 
   }
   
@@ -153,7 +154,8 @@
     overflow-x:auto;-webkit-overflow-scrolling:touch;
     border-radius:12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
   }
-  /* 💡 표 배경을 반투명하게 변경 (0.5) */
+  
+  /* 표 배경 반투명 처리 */
   table.board{ border-collapse:collapse;background:rgba(255, 255, 255, 0.5); }
   table.board.fit-table{width:100%;table-layout:fixed;}
   table.board.scroll-table{width:max-content;min-width:600px;table-layout:auto;}
@@ -175,8 +177,8 @@
   .car-header { border-bottom:2px solid var(--navy); padding-bottom:8px; margin-bottom:12px; text-align:left; }
   .car-plate { font-size:18px; font-weight:900; color:var(--navy); margin-bottom:4px; }
   .car-info-badges { display:flex; gap:6px; flex-wrap:wrap; }
-  .car-badge { background:rgba(226, 232, 240, 0.8); color:#334155; font-size:11.5px; padding:3px 8px; border-radius:12px; font-weight:700; }
-  .car-badge.fuel { background:rgba(219, 234, 254, 0.8); color:#1e40af; }
+  .car-badge { background:#e2e8f0; color:#334155; font-size:11.5px; padding:3px 8px; border-radius:12px; font-weight:700; }
+  .car-badge.fuel { background:#dbeafe; color:#1e40af; }
 
   .passenger-list-view { text-align:left; display:flex; flex-direction:column; gap:8px; }
   .p-view-item { background:rgba(248, 250, 252, 0.8); border:1px solid #cbd5e1; border-radius:6px; padding:8px; font-size:12.5px; line-height:1.4; }
@@ -351,10 +353,6 @@
     
     <!-- 📷 캡처될 내용물이 쏙 들어가는 알맹이 구역 -->
     <div id="captureTarget">
-      
-      <!-- 🌟 워터마크 이미지 추가 -->
-      <div class="watermark-bg"></div>
-
       <div class="board-header">
         <div class="icon-badge" id="iconBadge">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -521,7 +519,7 @@ function captureBoard() {
       backgroundColor: "#f1f5f9",
       width: captureTarget.scrollWidth,
       height: captureTarget.scrollHeight,
-      useCORS: true /* 🌟 외부 이미지(워터마크) 캡처를 허용하는 옵션 */
+      useCORS: true /* 🌟 외부 이미지(워터마크) 캡처를 완벽 지원하는 옵션 */
     }).then(canvas => {
       // 4. 원래 폰 화면 비율로 다시 원상복구
       boardHolder.style.overflow = origOverflow;
