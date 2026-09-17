@@ -298,6 +298,14 @@
     .v-setup-inputs > div.full-w { width:100%; }
     .toolbar button{flex:1;}
   }
+  @media (min-width: 641px){
+    .board-header { padding:20px 24px; }
+    .board-header-text { display:flex; align-items:baseline; flex-wrap:wrap; column-gap:18px; row-gap:4px; }
+    .board-title { font-size:32px; min-height:auto; }
+    .board-subtitle { margin-top:0; font-size:15px; }
+    .board-header .icon-badge { width:64px; height:64px; }
+    .board-header .icon-badge svg { width:36px; height:36px; }
+  }
   @media print{
     body{background:#fff;padding:0;}
     body::before, body::after {display:none !important;} 
