@@ -34,7 +34,7 @@
     z-index: 0;
   }
 
-  /* --- 캡처될 알맹이 구역 (워터마크 포함) --- */
+  /* --- 캡처될 알맹이 구역 --- */
   #captureTarget {
     position: relative;
     background: #f1f5f9;
@@ -43,21 +43,27 @@
     overflow: hidden; 
   }
   
-  /* 🌟 확실하게 캡처되는 워터마크 전용 구역 */
-  #captureTarget::before {
-    content: "";
+  /* 🌟 확실하게 캡처되는 투명 도화지 (워터마크) 구역 */
+  .watermark-bg {
     position: absolute !important;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-image: url('seoulfire.png'); 
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 50%; /* 로고 크기 조절 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     opacity: 0.15;
-    z-index: 0 !important; 
-    pointer-events: none; 
+    z-index: 0 !important;
+    pointer-events: none;
   }
   
-  /* 알맹이 구역 안의 요소들은 워터마크보다 위로 올라오게 설정 */
+  /* 로고와 글씨를 묶어주는 통 */
+  .watermark-content {
+    width: 50%; /* 💡 로고 및 글씨 크기를 키우고 싶다면 이 숫자를 올리세요 (예: 60%) */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* 알맹이 구역 안의 표 요소들은 워터마크보다 위로 올라오게 설정 */
   #captureTarget > * {
     position: relative;
     z-index: 1;
@@ -152,7 +158,7 @@
     overflow-x:auto;-webkit-overflow-scrolling:touch;
     border-radius:12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
   }
-  /* 💡 표 배경을 반투명하게 변경 (0.5) */
+  /* 표 배경 반투명 처리 */
   table.board{ border-collapse:collapse;background:rgba(255, 255, 255, 0.5); }
   table.board.fit-table{width:100%;table-layout:fixed;}
   table.board.scroll-table{width:max-content;min-width:600px;table-layout:auto;}
@@ -349,6 +355,19 @@
     
     <!-- 📷 캡처될 내용물이 쏙 들어가는 알맹이 구역 -->
     <div id="captureTarget">
+
+      <!-- 🌟 워터마크 이미지 및 글씨 추가 -->
+      <div class="watermark-bg">
+        <div class="watermark-content">
+          <!-- 소방 마크 이미지 -->
+          <img src="seoulfire.png" style="width:100%; display:block;">
+          <!-- 글씨 비율을 완벽하게 맞추는 특수 기법(SVG) -->
+          <svg viewBox="0 0 500 80" style="width:100%; margin-top:2%;">
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="'Malgun Gothic', '맑은 고딕', sans-serif" font-weight="900" font-size="75" fill="#0f172a" letter-spacing="10">영등포소방서</text>
+          </svg>
+        </div>
+      </div>
+
       <div class="board-header">
         <div class="icon-badge" id="iconBadge">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -376,7 +395,6 @@
     <div class="toolbar" id="toolbar" style="display:none; flex-wrap: wrap;">
       <button type="button" class="secondary" onclick="captureBoard()" style="color:#10b981; border-color:#34d399;">📷 전체 화면 캡처</button>
       <button type="button" class="secondary" onclick="window.print()">인쇄 / PDF 저장</button>
-      <!-- 🌟 초기화 버튼 텍스트 변경 및 클릭 시 새로고침 되도록 수정 -->
       <button type="button" class="danger" onclick="resetAll()">초기화 (DB 삭제)</button>
     </div>
   </div>
@@ -412,7 +430,6 @@ let isSpectator = false; // 관전 모드 여부 확인 변수
 const TYPE_OPTIONS = ['승용', 'SUV', '버스', '택시', '화물', '오토바이', '자전거', '기타'];
 const FUEL_OPTIONS = ['휘발유', '경유', 'LPG', '하이브리드', '전기', '기타'];
 const GENDER_OPTIONS = ['남', '여', '미상'];
-// 🌟 사망 옵션 제거됨
 const STATUS_OPTIONS = [
   {val: 'normal', label: '이상없음'},
   {val: 'mild', label: '🟡 경상'},
@@ -516,7 +533,7 @@ function captureBoard() {
       backgroundColor: "#f1f5f9",
       width: captureTarget.scrollWidth,
       height: captureTarget.scrollHeight,
-      useCORS: true /* 🌟 외부 이미지(워터마크) 캡처를 완벽 지원하는 옵션 */
+      useCORS: true /* 🌟 외부 이미지(워터마크) 캡처를 허용하는 옵션 */
     }).then(canvas => {
       // 4. 원래 폰 화면 비율로 다시 원상복구
       boardHolder.style.overflow = origOverflow;
@@ -569,7 +586,6 @@ function showSetupScreen(){
   window.scrollTo(0,0);
 }
 
-// 🌟 데이터베이스 삭제 후 브라우저 새로고침을 통해 완전 초기화 처리
 function resetAll(){
   if(isSpectator) return;
   if(!confirm('저장된 데이터를 모두 지우고 초기화할까요?')) return;
