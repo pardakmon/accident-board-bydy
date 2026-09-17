@@ -4,9 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>교통사고 차량별 현황판</title>
-<!-- 🌟 세븐 세그먼트(7-Segment) 느낌의 정통 디지털 폰트 (Orbitron) 불러오기 -->
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
 <style>
+  /* 🌟 100% 확실하게 구동되는 내장형 7-Segment(세븐 세그먼트) 디지털 폰트 선언 */
+  @font-face {
+    font-family: 'Segment7';
+    src: url('https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzHzvmr6DBkCsK7CpiNsUnJY4ioA.woff2') format('woff2');
+  }
+
   :root{
     --ink:#0f172a;
     --line:#cbd5e1;
@@ -154,7 +158,7 @@
   .board-title{font-size:22px;font-weight:800;color:#fff;min-height:24px;}
   .board-subtitle{font-size:13px;color:#cbd5e1;margin-top:4px;font-weight:600;letter-spacing:0.5px;}
 
-  /* 🌟 7-Segment(세븐 세그먼트) 디지털 폰트 및 폭 정렬 적용 */
+  /* 🌟 세븐 세그먼트 디지털 폰트 적용 및 폭 일치 */
   .header-clock {
     text-align: center;
     color: #ffffff;
@@ -164,7 +168,7 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     flex-shrink: 0;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-    width: 185px; /* 날짜와 디지털 시계 폭 완벽 일치 */
+    width: 185px;
   }
   .header-clock .time-date { 
     font-size: 12.5px; 
@@ -174,12 +178,12 @@
     font-weight: 600;
   }
   .header-clock .time-main {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 19px;
+    font-family: 'Segment7', sans-serif;
+    font-size: 18px;
     font-weight: 700;
-    letter-spacing: 1.5px;
-    color: #38bdf8; /* 디지털 느낌을 살리는 은은한 블루 LED 컬러 */
-    text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+    letter-spacing: 2px;
+    color: #38bdf8; /* LED 블루 라이트 느낌 */
+    text-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
   }
 
   .legend{display:flex;justify-content:flex-end;gap:12px;margin-bottom:8px;font-size:12px;font-weight:600;flex-wrap:wrap;}
@@ -395,7 +399,7 @@
         </div>
       </div>
 
-      <!-- 🌟 진한 상단바 (제목 영역 + 우측 7-Segment 디지털 시계) -->
+      <!-- 🌟 진한 상단바 (제목 영역 + 우측 세븐 세그먼트 디지털 시계) -->
       <div class="board-header">
         <div class="board-header-left">
           <div class="icon-badge" id="iconBadge">
@@ -408,7 +412,7 @@
             <div class="board-subtitle">교통사고 차량별 현황판</div>
           </div>
         </div>
-        <!-- 우측 디지털 시계 박스 -->
+        <!-- 우측 7-Segment 디지털 시계 박스 -->
         <div class="header-clock" id="liveClock">
           <div class="time-date" id="clockDate">--.--.-- (--)</div>
           <div class="time-main" id="clockTime">--:--:--</div>
