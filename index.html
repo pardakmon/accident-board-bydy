@@ -126,11 +126,9 @@
   .stat-card.total .num{color:var(--navy);}
   .stat-card.severe .num{color:var(--rescue);}
   .stat-card.mild .num{color:#d97706;}
-  .stat-card.dead .num{color:var(--locked);}
   .stat-card.total{border-top:4px solid var(--navy);}
   .stat-card.severe{border-top:4px solid var(--rescue);}
   .stat-card.mild{border-top:4px solid #f59e0b;}
-  .stat-card.dead{border-top:4px solid var(--locked);}
 
   .board-header{
     display:flex;align-items:center;gap:16px;margin-bottom:14px;
@@ -184,7 +182,6 @@
   .p-view-item strong { color:#0f172a; font-size:13.5px;}
   .p-view-item .p-status-severe { color:var(--rescue); font-weight:800; }
   .p-view-item .p-status-mild { color:#d97706; font-weight:800; }
-  .p-view-item .p-status-dead { color:var(--locked); font-weight:800; }
   .p-view-item .p-status-normal { color:#64748b; font-weight:600; }
 
   .origin-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;background:var(--origin);border-radius:6px;padding:4px 8px;margin-top:12px; font-size:12.5px;}
@@ -352,7 +349,6 @@
     
     <!-- 📷 캡처될 내용물이 쏙 들어가는 알맹이 구역 -->
     <div id="captureTarget">
-
       <div class="board-header">
         <div class="icon-badge" id="iconBadge">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -380,6 +376,7 @@
     <div class="toolbar" id="toolbar" style="display:none; flex-wrap: wrap;">
       <button type="button" class="secondary" onclick="captureBoard()" style="color:#10b981; border-color:#34d399;">📷 전체 화면 캡처</button>
       <button type="button" class="secondary" onclick="window.print()">인쇄 / PDF 저장</button>
+      <!-- 🌟 초기화 버튼 텍스트 변경 및 클릭 시 새로고침 되도록 수정 -->
       <button type="button" class="danger" onclick="resetAll()">초기화 (DB 삭제)</button>
     </div>
   </div>
@@ -415,11 +412,11 @@ let isSpectator = false; // 관전 모드 여부 확인 변수
 const TYPE_OPTIONS = ['승용', 'SUV', '버스', '택시', '화물', '오토바이', '자전거', '기타'];
 const FUEL_OPTIONS = ['휘발유', '경유', 'LPG', '하이브리드', '전기', '기타'];
 const GENDER_OPTIONS = ['남', '여', '미상'];
+// 🌟 사망 옵션 제거됨
 const STATUS_OPTIONS = [
   {val: 'normal', label: '이상없음'},
   {val: 'mild', label: '🟡 경상'},
-  {val: 'severe', label: '🔴 중상'},
-  {val: 'dead', label: '⚫ 사망/DOA'}
+  {val: 'severe', label: '🔴 중상'}
 ];
 
 // --- [인증 및 로그인 처리] ---
@@ -519,7 +516,7 @@ function captureBoard() {
       backgroundColor: "#f1f5f9",
       width: captureTarget.scrollWidth,
       height: captureTarget.scrollHeight,
-      useCORS: true /* 🌟 외부 이미지(워터마크) 캡처를 허용하는 옵션 */
+      useCORS: true /* 🌟 외부 이미지(워터마크) 캡처를 완벽 지원하는 옵션 */
     }).then(canvas => {
       // 4. 원래 폰 화면 비율로 다시 원상복구
       boardHolder.style.overflow = origOverflow;
@@ -572,6 +569,7 @@ function showSetupScreen(){
   window.scrollTo(0,0);
 }
 
+// 🌟 데이터베이스 삭제 후 브라우저 새로고침을 통해 완전 초기화 처리
 function resetAll(){
   if(isSpectator) return;
   if(!confirm('저장된 데이터를 모두 지우고 초기화할까요?')) return;
@@ -785,21 +783,26 @@ function render(){
   const name = document.getElementById('accidentName').value.trim();
   document.getElementById('titleLine').textContent = name || '교통사고 현황';
 
-  let totalCount=0, severeCount=0, mildCount=0, deadCount=0;
+  let totalCount=0, severeCount=0, mildCount=0;
+  let totalVehicles = vehicles.length; // 🌟 총 차량 대수 계산
   vehicles.forEach(v => {
     (v.persons || []).forEach(p => {
       totalCount++;
       if(p.status==='severe') severeCount++;
       else if(p.status==='mild') mildCount++;
-      else if(p.status==='dead') deadCount++;
     });
   });
 
+  // 🌟 순서 재배치 (차량/탑승 -> 경상 -> 중상) 및 사망 제거
   document.getElementById('summaryCards').innerHTML = `
-    <div class="stat-card total"><div class="num">${totalCount}</div><div class="label">총 탑승(명)</div></div>
-    <div class="stat-card severe"><div class="num">${severeCount}</div><div class="label">중상(명)</div></div>
+    <div class="stat-card total">
+      <div class="num" style="font-size:26px;">
+        ${totalVehicles}<span style="font-size:15px; font-weight:700; margin:0 4px 0 2px;">대</span><span style="color:#cbd5e1; margin-right:4px;">|</span>${totalCount}<span style="font-size:15px; font-weight:700; margin-left:2px;">명</span>
+      </div>
+      <div class="label">차량(대) / 탑승(명)</div>
+    </div>
     <div class="stat-card mild"><div class="num">${mildCount}</div><div class="label">경상(명)</div></div>
-    <div class="stat-card dead"><div class="num">${deadCount}</div><div class="label">사망(명)</div></div>
+    <div class="stat-card severe"><div class="num">${severeCount}</div><div class="label">중상(명)</div></div>
   `;
 
   const totalCols = vehicles.length;
