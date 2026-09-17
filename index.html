@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>교통사고 차량별 현황판</title>
 <style>
-  /* 🌟 100% 확실하게 구동되는 내장형 7-Segment(세븐 세그먼트) 디지털 폰트 선언 */
+  /* 🌟 실제 7-Segment(세븐 세그먼트) 전자시계 전용 폰트 데이터 직접 내장 */
   @font-face {
-    font-family: 'Segment7';
-    src: url('https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzHzvmr6DBkCsK7CpiNsUnJY4ioA.woff2') format('woff2');
+    font-family: 'DSEG7Classic';
+    src: url('https://cdn.jsdelivr.net/gh/surjithctly/dseg/fonts/DSEG7Classic-Bold.woff2') format('woff2');
   }
 
   :root{
@@ -158,32 +158,32 @@
   .board-title{font-size:22px;font-weight:800;color:#fff;min-height:24px;}
   .board-subtitle{font-size:13px;color:#cbd5e1;margin-top:4px;font-weight:600;letter-spacing:0.5px;}
 
-  /* 🌟 세븐 세그먼트 디지털 폰트 적용 및 폭 일치 */
+  /* 🌟 100% 각진 7-Segment 디지털 시계 스타일 */
   .header-clock {
     text-align: center;
     color: #ffffff;
-    background: rgba(0, 0, 0, 0.35);
+    background: rgba(0, 0, 0, 0.4);
     padding: 8px 14px;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     flex-shrink: 0;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-    width: 185px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    width: 190px;
   }
   .header-clock .time-date { 
-    font-size: 12.5px; 
-    color: #cbd5e1; 
+    font-size: 12px; 
+    color: #94a3b8; 
     margin-bottom: 3px; 
     font-family: 'Malgun Gothic', sans-serif; 
-    font-weight: 600;
+    font-weight: 700;
   }
   .header-clock .time-main {
-    font-family: 'Segment7', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
+    font-family: 'DSEG7Classic', monospace;
+    font-size: 17px;
+    font-weight: bold;
     letter-spacing: 2px;
-    color: #38bdf8; /* LED 블루 라이트 느낌 */
-    text-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+    color: #38bdf8; /* 선명한 디지털 블루 LED 색상 */
+    text-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
   }
 
   .legend{display:flex;justify-content:flex-end;gap:12px;margin-bottom:8px;font-size:12px;font-weight:600;flex-wrap:wrap;}
@@ -412,7 +412,7 @@
             <div class="board-subtitle">교통사고 차량별 현황판</div>
           </div>
         </div>
-        <!-- 우측 7-Segment 디지털 시계 박스 -->
+        <!-- 우측 세븐 세그먼트 디지털 시계 박스 -->
         <div class="header-clock" id="liveClock">
           <div class="time-date" id="clockDate">--.--.-- (--)</div>
           <div class="time-main" id="clockTime">--:--:--</div>
@@ -476,7 +476,7 @@ const STATUS_OPTIONS = [
   {val: 'severe', label: '🔴 중상'}
 ];
 
-// --- [실시간 7-Segment 디지털 시계 작동 함수] ---
+// --- [실시간 세븐 세그먼트 디지털 시계 작동 함수] ---
 function updateLiveClock() {
   const now = new Date();
   const year = String(now.getFullYear()).slice(2);
