@@ -138,10 +138,11 @@
   .stat-card.mild{border-top:4px solid #f59e0b;}
 
   .board-header{
-    display:flex;align-items:center;gap:16px;margin-bottom:14px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;
     background:linear-gradient(135deg, var(--navy), #334155);
     padding:16px 20px;border-radius:14px; box-shadow:0 4px 12px rgba(15,23,42,0.2);
   }
+  .board-header-left { display:flex; align-items:center; gap:16px; }
   .board-header .icon-badge{
     width:60px;height:60px;border-radius:50%;flex-shrink:0; background:rgba(255,255,255,0.1);
     border:2px solid rgba(255,255,255,0.2); display:flex;align-items:center;justify-content:center;
@@ -150,6 +151,23 @@
   .board-header-text{text-align:left;}
   .board-title{font-size:22px;font-weight:800;color:#fff;min-height:24px;}
   .board-subtitle{font-size:13px;color:#cbd5e1;margin-top:4px;font-weight:600;letter-spacing:0.5px;}
+
+  /* 🌟 디지털 시계 디자인 적용 (흰색 글씨, 고정폭 폰트) */
+  .header-clock {
+    text-align: right;
+    color: #ffffff;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 1px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .header-clock .time-date { font-size: 11.5px; color: #94a3b8; font-weight: 600; margin-bottom: 2px; font-family: "Malgun Gothic", sans-serif; }
 
   .legend{display:flex;justify-content:flex-end;gap:12px;margin-bottom:8px;font-size:12px;font-weight:600;flex-wrap:wrap;}
   .legend span{display:inline-flex;align-items:center;gap:4px;}
@@ -357,25 +375,33 @@
     <!-- 📷 캡처될 내용물이 쏙 들어가는 알맹이 구역 -->
     <div id="captureTarget">
 
-      <!-- 🌟 워터마크 이미지 및 글씨 추가 -->
+      <!-- 🌟 워터마크 이미지 구역 -->
       <div class="watermark-bg">
         <div class="watermark-content">
-          <!-- 소방 마크 이미지 -->
           <img src="seoulfire.png" style="width:100%; display:block;">
         </div>
       </div>
 
+      <!-- 🌟 진한 상단바 (제목 영역 + 우측 디지털 시계) -->
       <div class="board-header">
-        <div class="icon-badge" id="iconBadge">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 6.5H17.5L18.5 9.5H5.5L6.5 6.5ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16Z"/>
-          </svg>
+        <div class="board-header-left">
+          <div class="icon-badge" id="iconBadge">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 6.5H17.5L18.5 9.5H5.5L6.5 6.5ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16Z"/>
+            </svg>
+          </div>
+          <div class="board-header-text">
+            <div id="titleLine" class="board-title"></div>
+            <div class="board-subtitle">교통사고 차량별 현황판</div>
+          </div>
         </div>
-        <div class="board-header-text">
-          <div id="titleLine" class="board-title"></div>
-          <div class="board-subtitle">교통사고 차량별 현황판</div>
+        <!-- 우측 디지털 시계 배치 -->
+        <div class="header-clock" id="liveClock">
+          <div class="time-date" id="clockDate">--년 --월 --일 (--)</div>
+          <div id="clockTime">--:--:--</div>
         </div>
       </div>
+
       <div id="summaryCards" class="stat-cards"></div>
       <div class="legend">
         <span><span class="swatch origin-sw"></span>🔥 화재발생</span>
@@ -432,6 +458,28 @@ const STATUS_OPTIONS = [
   {val: 'mild', label: '🟡 경상'},
   {val: 'severe', label: '🔴 중상'}
 ];
+
+// --- [실시간 디지털 시계 작동 함수] ---
+function updateLiveClock() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const date = String(now.getDate()).padStart(2, '0');
+  const days = ['일', '월', '화', '수', '목', '금', '토'];
+  const day = days[now.getDay()];
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+
+  const dateEl = document.getElementById('clockDate');
+  const timeEl = document.getElementById('clockTime');
+  if (dateEl && timeEl) {
+    dateEl.textContent = `${year}.${month}.${date} (${day})`;
+    timeEl.textContent = `${hours}:${minutes}:${seconds}`;
+  }
+}
+setInterval(updateLiveClock, 1000); // 1초마다 갱신
+updateLiveClock(); // 즉시 실행
 
 // --- [인증 및 로그인 처리] ---
 auth.onAuthStateChanged(user => {
@@ -806,7 +854,6 @@ function render(){
     });
   });
 
-  // 🌟 통계 카드 순서 재배치 (차량/탑승 -> 경상 -> 중상) 및 사망 제거
   document.getElementById('summaryCards').innerHTML = `
     <div class="stat-card total">
       <div class="num" style="font-size:26px;">
@@ -881,7 +928,7 @@ function startDatabaseListener() {
   boardRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
-      document.getElementById('accidentName').value = data.accidentName || '';
+      document.getElementById('accidentName').value = data.accidentName ||` 사건명없음 ` ;
       document.getElementById('vehicleCount').value = data.vehicleCount || 2;
       vehicles = data.vehicles || []; 
       setupVehicles = data.setupVehicles || [];
