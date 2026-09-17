@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>교통사고 차량별 현황판</title>
-<!-- 🌟 각진 전자시계 느낌을 내기 위한 구글 디지털 폰트 불러오기 -->
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<!-- 🌟 세븐 세그먼트(7-Segment) 느낌의 정통 디지털 폰트 (Orbitron) 불러오기 -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#0f172a;
@@ -154,30 +154,32 @@
   .board-title{font-size:22px;font-weight:800;color:#fff;min-height:24px;}
   .board-subtitle{font-size:13px;color:#cbd5e1;margin-top:4px;font-weight:600;letter-spacing:0.5px;}
 
-  /* 🌟 날짜와 시간의 가로 폭을 완벽히 맞추고 정통 디지털 폰트 적용 */
+  /* 🌟 7-Segment(세븐 세그먼트) 디지털 폰트 및 폭 정렬 적용 */
   .header-clock {
     text-align: center;
     color: #ffffff;
-    font-family: 'Share Tech Mono', monospace;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.35);
     padding: 8px 14px;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     flex-shrink: 0;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-    width: 175px; /* 👈 날짜와 시간이 정확히 같은 폭 안에서 정렬되도록 고정 */
+    width: 185px; /* 날짜와 디지털 시계 폭 완벽 일치 */
   }
   .header-clock .time-date { 
-    font-size: 13px; 
+    font-size: 12.5px; 
     color: #cbd5e1; 
-    margin-bottom: 2px; 
-    font-family: 'Share Tech Mono', monospace; 
-    letter-spacing: 0.5px;
+    margin-bottom: 3px; 
+    font-family: 'Malgun Gothic', sans-serif; 
+    font-weight: 600;
   }
   .header-clock .time-main {
-    font-size: 21px;
-    font-weight: bold;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
     letter-spacing: 1.5px;
+    color: #38bdf8; /* 디지털 느낌을 살리는 은은한 블루 LED 컬러 */
+    text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
   }
 
   .legend{display:flex;justify-content:flex-end;gap:12px;margin-bottom:8px;font-size:12px;font-weight:600;flex-wrap:wrap;}
@@ -393,7 +395,7 @@
         </div>
       </div>
 
-      <!-- 🌟 진한 상단바 (제목 영역 + 우측 정렬된 디지털 시계) -->
+      <!-- 🌟 진한 상단바 (제목 영역 + 우측 7-Segment 디지털 시계) -->
       <div class="board-header">
         <div class="board-header-left">
           <div class="icon-badge" id="iconBadge">
@@ -470,10 +472,10 @@ const STATUS_OPTIONS = [
   {val: 'severe', label: '🔴 중상'}
 ];
 
-// --- [실시간 디지털 시계 작동 함수] ---
+// --- [실시간 7-Segment 디지털 시계 작동 함수] ---
 function updateLiveClock() {
   const now = new Date();
-  const year = String(now.getFullYear()).slice(2); // 연도 뒤 2자리 (깔끔하게)
+  const year = String(now.getFullYear()).slice(2);
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const date = String(now.getDate()).padStart(2, '0');
   const days = ['일', '월', '화', '수', '목', '금', '토'];
