@@ -772,11 +772,17 @@ function openEditor(idx){
     <div class="modal">
       <h3>${v.plate} 상세 현황</h3>
       <div class="checks" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
-        <label style="color:#15803d;"><input type="checkbox" id="m_safety" ${v.safetyAction?'checked':''}> 🚧 안전조치</label>
-        <label style="color:#ca8a04; font-weight:800;"><input type="checkbox" id="m_battery" ${v.batteryDisconnect?'checked':''}> 🔌 배터리차단</label>
+        <!-- 🌟 윗줄 -->
         <label style="color:var(--origin);"><input type="checkbox" id="m_fire" ${v.fire?'checked':''}> 🔥 화재발생</label>
         <label style="color:var(--rollover);"><input type="checkbox" id="m_rollover" ${v.rollover?'checked':''}> 🔄 전복</label>
         <label style="color:var(--entrap);"><input type="checkbox" id="m_entrap" ${v.entrap?'checked':''}> ⚙️ 끼임</label>
+        
+        <!-- 강제 줄바꿈 -->
+        <div style="flex-basis: 100%; height: 0; margin: 0;"></div>
+        
+        <!-- 🌟 아랫줄 -->
+        <label style="color:#15803d;"><input type="checkbox" id="m_safety" ${v.safetyAction?'checked':''}> 🚧 안전조치</label>
+        <label style="color:#ca8a04; font-weight:800;"><input type="checkbox" id="m_battery" ${v.batteryDisconnect?'checked':''}> 🔌 배터리차단</label>
       </div>
       <div style="margin-top:16px;">
         <label style="font-size:14px; color:var(--navy); border-bottom:1px solid #e2e8f0; padding-bottom:6px; margin-bottom:12px;">탑승자 개별 입력 (${v.passengers}명)</label>
