@@ -316,7 +316,10 @@
   .legend-break { display: none; }
   @media (max-width: 640px) and (orientation: portrait) {
     .legend-break { display: block; flex-basis: 100%; height: 0; margin: 0; }
+    .mobile-br { display: block; } /* 🌟 폰 세로에서만 줄을 바꿈 */
   }
+  .mobile-br { display: none; } /* PC나 가로화면에서는 줄바꿈 무시 */
+  .board-title, .board-subtitle { word-break: keep-all; } /* 글자가 반토막 나지 않게 단어 단위로 묶음 */
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -407,7 +410,7 @@
           </div>
           <div class="board-header-text">
             <div id="titleLine" class="board-title"></div>
-            <div class="board-subtitle">교통사고 차량별 현황판</div>
+            <div class="board-subtitle">교통사고 차량별<br class="mobile-br"> 현황판</div>
           </div>
         </div>
         <!-- 우측 신고접수일시 박스 -->
@@ -845,7 +848,7 @@ window.__cellClick = function(idx){
 function render(){
   document.getElementById('toolbar').style.display='flex';
   const name = document.getElementById('accidentName').value.trim();
-  document.getElementById('titleLine').textContent = name || '교통사고 현황';
+  document.getElementById('titleLine').textContent = name || '교통사고<br class="mobile-br"> 현황';
 
   // 🌟 신고접수일시 데이터를 상단바 화면에 반영
   const dTime = document.getElementById('dispatchTime').value.trim();
