@@ -756,6 +756,8 @@ function openEditor(idx){
     <div class="modal">
       <h3>${v.plate} 상세 현황</h3>
       <div class="checks" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
+        <label style="color:#15803d;"><input type="checkbox" id="m_safety" ${v.safetyAction?'checked':''}> 🚧 안전조치</label>
+        <label style="color:#b45309;"><input type="checkbox" id="m_battery" ${v.batteryDisconnect?'checked':''}> 🔌 배터리차단</label>
         <label style="color:var(--origin);"><input type="checkbox" id="m_fire" ${v.fire?'checked':''}> 🔥 화재발생</label>
         <label style="color:var(--rollover);"><input type="checkbox" id="m_rollover" ${v.rollover?'checked':''}> 🔄 전복</label>
         <label style="color:var(--entrap);"><input type="checkbox" id="m_entrap" ${v.entrap?'checked':''}> ⚙️ 끼임</label>
@@ -809,6 +811,8 @@ function renderModalPassengers(){
 function updatePerson(pIdx, field, value){ vehicles[editingIdx].persons[pIdx][field] = value; }
 function closeEditor(){ const o = document.getElementById('editorOverlay'); if(o) o.remove(); editingIdx = null; }
 function saveEditor(){
+  vehicles[editingIdx].safetyAction = document.getElementById('m_safety').checked;
+  vehicles[editingIdx].batteryDisconnect = document.getElementById('m_battery').checked;
   vehicles[editingIdx].fire = document.getElementById('m_fire').checked;
   vehicles[editingIdx].rollover = document.getElementById('m_rollover').checked;
   vehicles[editingIdx].entrap = document.getElementById('m_entrap').checked;
@@ -885,8 +889,14 @@ function render(){
     const entrapTag = v.entrap ? `<div class="entrap-tag">⚙️ 끼임</div>` : '';
 
     html += `<td class="unit-cell" onclick="__cellClick(${idx})">
+    const safetyIcon = v.safetyAction ? '🚧' : '';
+    const batteryIcon = v.batteryDisconnect ? '🔌' : '';
+    const icons = [safetyIcon, batteryIcon].filter(Boolean).join(' ');
+    const iconsHtml = icons ? `<span style="font-size:16px; margin-left:6px;">${icons}</span>` : '';
+
+    html += `<td class="unit-cell" onclick="__cellClick(${idx})">
       <div class="car-header">
-        <div class="car-plate">${v.plate}</div>
+        <div class="car-plate">${v.plate}${iconsHtml}</div>
         <div class="car-info-badges"><span class="car-badge">${displayType}</span><span class="car-badge fuel">${v.fuel}</span><span class="car-badge" style="background:#f1f5f9;">탑승 ${v.passengers}명</span></div>
       </div>
       <div class="passenger-list-view">${pListHtml}</div>
@@ -927,6 +937,11 @@ function startDatabaseListener() {
       setupVehicles = data.setupVehicles || [];
       if(typeof renderSetupVehicles === 'function') renderSetupVehicles();
       if(typeof render === 'function') render();
+      
+      if (vehicles.length > 0 && document.getElementById('setupScreen').style.display !== 'none') {
+        showBoardScreen();
+      }
+
       const note = document.getElementById('autosaveNote');
       if(note){
         const t = new Date();
