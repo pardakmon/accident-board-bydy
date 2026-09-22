@@ -704,6 +704,8 @@ function generateBoard(){
       fuel: sv.fuel,
       plate: sv.plate || `미상 (차량${i+1})`,
       passengers: sv.passengers,
+      safetyAction: old.safetyAction || false,
+      batteryDisconnect: old.batteryDisconnect || false,
       fire: old.fire || false,
       rollover: old.rollover || false,
       entrap: old.entrap || false,
@@ -888,7 +890,6 @@ function render(){
     const rolloverTag = v.rollover ? `<div class="rollover-tag">🔄 전복</div>` : '';
     const entrapTag = v.entrap ? `<div class="entrap-tag">⚙️ 끼임</div>` : '';
 
-    html += `<td class="unit-cell" onclick="__cellClick(${idx})">
     const safetyIcon = v.safetyAction ? '🚧' : '';
     const batteryIcon = v.batteryDisconnect ? '🔌' : '';
     const icons = [safetyIcon, batteryIcon].filter(Boolean).join(' ');
@@ -938,6 +939,7 @@ function startDatabaseListener() {
       if(typeof renderSetupVehicles === 'function') renderSetupVehicles();
       if(typeof render === 'function') render();
       
+      // 🌟 다른 사람이 만든 현황판 데이터가 존재하면, 생성 화면을 숨기고 즉시 현황판으로 이동!
       if (vehicles.length > 0 && document.getElementById('setupScreen').style.display !== 'none') {
         showBoardScreen();
       }
