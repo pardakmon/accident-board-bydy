@@ -848,7 +848,7 @@ window.__cellClick = function(idx){
 function render(){
   document.getElementById('toolbar').style.display='flex';
   const name = document.getElementById('accidentName').value.trim();
-  document.getElementById('titleLine').textContent = name || '교통사고<br class="mobile-br"> 현황';
+  document.getElementById('titleLine').innerHTML = name || '교통사고<br class="mobile-br"> 현황';
 
   // 🌟 신고접수일시 데이터를 상단바 화면에 반영
   const dTime = document.getElementById('dispatchTime').value.trim();
