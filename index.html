@@ -308,6 +308,14 @@
     .board-header{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none;}
     .stat-card{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none;break-inside:avoid;}
   }
+
+  .safety-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;background:#15803d;border-radius:6px;padding:4px 8px;margin-top:6px; font-size:12.5px;}
+  .battery-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;background:#eab308;border-radius:6px;padding:4px 8px;margin-top:6px; font-size:12.5px;}
+ 
+  .legend-break { display: none; }
+  @media (max-width: 640px) and (orientation: portrait) {
+    .legend-break { display: block; flex-basis: 100%; height: 0; margin: 0; }
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -413,6 +421,7 @@
         <span><span class="swatch origin-sw"></span>🔥 화재발생</span>
         <span><span class="swatch rollover-sw"></span>🔄 전복</span>
         <span><span class="swatch entrap-sw"></span>⚙️ 끼임</span>
+        <span class="legend-break"></span>
         <span><span class="swatch" style="background:#15803d;"></span>🚧 안전조치</span>
         <span><span class="swatch" style="background:#b45309;"></span>🔌 배터리차단</span>
       </div>
@@ -890,19 +899,16 @@ function render(){
     const fireTag = v.fire ? `<div class="origin-tag">🔥 화재발생</div>` : '';
     const rolloverTag = v.rollover ? `<div class="rollover-tag">🔄 전복</div>` : '';
     const entrapTag = v.entrap ? `<div class="entrap-tag">⚙️ 끼임</div>` : '';
-
-    const safetyIcon = v.safetyAction ? '🚧' : '';
-    const batteryIcon = v.batteryDisconnect ? '🔌' : '';
-    const icons = [safetyIcon, batteryIcon].filter(Boolean).join(' ');
-    const iconsHtml = icons ? `<span style="font-size:16px; margin-left:6px;">${icons}</span>` : '';
+    const safetyTag = v.safetyAction ? `<div class="safety-tag">🚧 안전조치 완료</div>` : '';
+    const batteryTag = v.batteryDisconnect ? `<div class="battery-tag">🔌 배터리 차단</div>` : '';
 
     html += `<td class="unit-cell" onclick="__cellClick(${idx})">
       <div class="car-header">
-        <div class="car-plate">${v.plate}${iconsHtml}</div>
+        <div class="car-plate">${v.plate}</div>
         <div class="car-info-badges"><span class="car-badge">${displayType}</span><span class="car-badge fuel">${v.fuel}</span><span class="car-badge" style="background:#f1f5f9;">탑승 ${v.passengers}명</span></div>
       </div>
       <div class="passenger-list-view">${pListHtml}</div>
-      ${fireTag}${rolloverTag}${entrapTag}
+      ${fireTag}${rolloverTag}${entrapTag}${safetyTag}${batteryTag}
     </td>`;
   });
 
