@@ -310,7 +310,7 @@
   }
 
   .safety-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;background:#15803d;border-radius:6px;padding:4px 8px;margin-top:6px; font-size:12.5px;}
-  .battery-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;background:#eab308;border-radius:6px;padding:4px 8px;margin-top:6px; font-size:12.5px;}
+  .battery-tag{color:#1e293b;font-weight:900;display:flex;align-items:center;justify-content:center;gap:4px;background:#facc15;border-radius:6px;padding:4px 8px;margin-top:6px; font-size:12.5px;}
  
   .legend-break { display: none; }
   @media (max-width: 640px) and (orientation: portrait) {
@@ -423,7 +423,7 @@
         <span><span class="swatch entrap-sw"></span>⚙️ 끼임</span>
         <span class="legend-break"></span>
         <span><span class="swatch" style="background:#15803d;"></span>🚧 안전조치</span>
-        <span><span class="swatch" style="background:#b45309;"></span>🔌 배터리차단</span>
+        <span><span class="swatch" style="background:#facc15;"></span>🔌 배터리차단</span>
       </div>
 
       <div id="boardHolder"><div class="empty-hint">위 설정을 입력하고 "표 생성"을 누르세요.</div></div>
@@ -769,7 +769,7 @@ function openEditor(idx){
       <h3>${v.plate} 상세 현황</h3>
       <div class="checks" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
         <label style="color:#15803d;"><input type="checkbox" id="m_safety" ${v.safetyAction?'checked':''}> 🚧 안전조치</label>
-        <label style="color:#b45309;"><input type="checkbox" id="m_battery" ${v.batteryDisconnect?'checked':''}> 🔌 배터리차단</label>
+        <label style="color:#ca8a04; font-weight:800;"><input type="checkbox" id="m_battery" ${v.batteryDisconnect?'checked':''}> 🔌 배터리차단</label>
         <label style="color:var(--origin);"><input type="checkbox" id="m_fire" ${v.fire?'checked':''}> 🔥 화재발생</label>
         <label style="color:var(--rollover);"><input type="checkbox" id="m_rollover" ${v.rollover?'checked':''}> 🔄 전복</label>
         <label style="color:var(--entrap);"><input type="checkbox" id="m_entrap" ${v.entrap?'checked':''}> ⚙️ 끼임</label>
