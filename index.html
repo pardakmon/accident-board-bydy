@@ -770,7 +770,14 @@ function openEditor(idx){
   overlay.id='editorOverlay';
   overlay.innerHTML = `
     <div class="modal">
-      <h3>${v.plate} 상세 현황</h3>
+      <h3>차량 상세 현황</h3>
+      
+      <!-- 🌟 차량 이름/번호 수정 칸 추가 -->
+      <div style="margin-bottom: 16px;">
+        <label style="font-size:12px; color:#64748b; font-weight:700; display:block; margin-bottom:6px;">차량명 및 번호 수정</label>
+        <input type="text" id="m_plate" value="${v.plate}" style="font-size:15px; font-weight:800; color:var(--navy); padding:10px 14px; border:1px solid #cbd5e1; border-radius:8px; width:100%; box-sizing:border-box; background:#f8fafc;" placeholder="예: 쏘나타 12가 3456">
+      </div>
+
       <div class="checks" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
         <!-- 🌟 윗줄 -->
         <label style="color:var(--origin);"><input type="checkbox" id="m_fire" ${v.fire?'checked':''}> 🔥 화재발생</label>
@@ -832,7 +839,12 @@ function renderModalPassengers(){
 
 function updatePerson(pIdx, field, value){ vehicles[editingIdx].persons[pIdx][field] = value; }
 function closeEditor(){ const o = document.getElementById('editorOverlay'); if(o) o.remove(); editingIdx = null; }
+
 function saveEditor(){
+  // 🌟 입력칸에서 수정한 차량 이름/번호를 가져와서 저장 (다 지우면 기본값 세팅)
+  const newPlate = document.getElementById('m_plate').value.trim();
+  vehicles[editingIdx].plate = newPlate ? newPlate : "미상 (차량" + (editingIdx + 1) + ")";
+
   vehicles[editingIdx].safetyAction = document.getElementById('m_safety').checked;
   vehicles[editingIdx].batteryDisconnect = document.getElementById('m_battery').checked;
   vehicles[editingIdx].fire = document.getElementById('m_fire').checked;
