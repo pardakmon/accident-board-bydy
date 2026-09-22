@@ -775,7 +775,7 @@ function openEditor(idx){
       <!-- 🌟 차량 이름/번호 수정 칸 추가 -->
       <div style="margin-bottom: 16px;">
         <label style="font-size:12px; color:#64748b; font-weight:700; display:block; margin-bottom:6px;">차량명 및 번호 수정</label>
-        <input type="text" id="m_plate" value="${v.plate}" onfocus="if(this.value.includes('미상')) this.value='';" style="font-size:15px; font-weight:800; color:var(--navy); padding:10px 14px; border:1px solid #cbd5e1; border-radius:8px; width:100%; box-sizing:border-box; background:#f8fafc;" placeholder="예: 쏘나타 12가 3456">
+        <input type="text" id="m_plate" value="${v.plate}" onfocus="if(this.value.indexOf('미상') !== -1) this.value='';" onclick="if(this.value.indexOf('미상') !== -1) this.value='';" ontouchstart="if(this.value.indexOf('미상') !== -1) this.value='';" style="font-size:15px; font-weight:800; color:var(--navy); padding:10px 14px; border:1px solid #cbd5e1; border-radius:8px; width:100%; box-sizing:border-box; background:#f8fafc;" placeholder="예: 쏘나타 12가 3456">
       </div>
 
       <div class="checks" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
