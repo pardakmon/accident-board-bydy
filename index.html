@@ -606,8 +606,21 @@ function captureBoard() {
   }, 100); 
 }
 
-// PC와 모바일을 구분하여 가장 편한 방식으로 공유해주는 업그레이드 함수
+// PC와 모바일을 구분하여 가장 편한 방식으로 공유해주는 업그레이드 함수 (교통사고 전용 - 시간 자동 추가)
 async function shareCapturedImage(dataUrl) {
+  // 1. 캡처 버튼을 누른 현재 시간으로 겹치지 않는 파일명 만들기 (예: 20261002_084530)
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const hh = String(now.getHours()).padStart(2, '0');
+  const min = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  const timeString = `${yyyy}${mm}${dd}_${hh}${min}${ss}`;
+  
+  // 파일명 완성 (예: 교통사고현황판_20261002_084530.png)
+  const fileName = `교통사고현황판_${timeString}.png`;
+  
   // 모바일 기기인지 확인
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   
@@ -616,30 +629,29 @@ async function shareCapturedImage(dataUrl) {
     try {
       const res = await fetch(dataUrl);
       const blob = await res.blob();
-      const file = new File([blob], '현황판_상황보고.png', { type: 'image/png' });
-      await navigator.share({ title: '현황판 상황보고', files: [file] });
+      const file = new File([blob], fileName, { type: 'image/png' });
+      await navigator.share({ title: '교통사고 현황판 상황보고', files: [file] });
     } catch (error) {
       console.log('공유 취소 또는 에러:', error);
     }
   } else {
-    // [PC 환경] 1. 파일 다운로드 실행 (기존과 동일)
+    // [PC 환경] 1. 파일 다운로드 실행 (시간이 적힌 파일명으로 다운로드됨)
     const link = document.createElement('a');
     link.href = dataUrl;
-    link.download = '현황판_상황보고.png';
+    link.download = fileName; 
     link.click(); 
     
-    // [PC 환경] 2. 카카오톡 바로 붙여넣기를 위한 클립보드(임시저장소) 복사 시도
+    // [PC 환경] 2. 카카오톡 바로 붙여넣기를 위한 클립보드 복사
     try {
       const res = await fetch(dataUrl);
       const blob = await res.blob();
       const item = new ClipboardItem({ "image/png": blob });
       await navigator.clipboard.write([item]);
       
-      // 복사 완료 안내창 띄우기
-      alert("✅ 캡처 완료!\n이미지가 복사되었습니다.\n\nPC 카카오톡 채팅창을 클릭하고 '붙여넣기(Ctrl + V)'를 하시면 바로 전송됩니다.");
+      // 안내창에 바뀐 파일명도 함께 띄워줌
+      alert(`✅ 캡처 완료!\n[${fileName}]\n저장 및 복사가 완료되었습니다.\n\nPC 카카오톡 채팅창에 '붙여넣기(Ctrl + V)'를 하시면 바로 전송됩니다.`);
     } catch (err) {
-      // 복사를 지원하지 않는 구형 브라우저인 경우
-      alert("✅ 캡처 이미지가 [다운로드] 폴더에 저장되었습니다.");
+      alert(`✅ 캡처 이미지가 [다운로드] 폴더에 [${fileName}] 이름으로 저장되었습니다.`);
     }
   }
 }
