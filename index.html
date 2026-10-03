@@ -807,29 +807,34 @@ function openEditor(idx){
     <div class="modal">
       <h3>차량 상세 현황</h3>
       
-      <!-- 🌟 차량 이름/번호 수정 칸 추가 -->
       <div style="margin-bottom: 16px;">
         <label style="font-size:12px; color:#64748b; font-weight:700; display:block; margin-bottom:6px;">차량명 및 번호 수정</label>
         <input type="text" id="m_plate" value="${v.plate}" onfocus="if(this.value.indexOf('미상') !== -1) this.value='';" onclick="if(this.value.indexOf('미상') !== -1) this.value='';" ontouchstart="if(this.value.indexOf('미상') !== -1) this.value='';" style="font-size:15px; font-weight:800; color:var(--navy); padding:10px 14px; border:1px solid #cbd5e1; border-radius:8px; width:100%; box-sizing:border-box; background:#f8fafc;" placeholder="예: 쏘나타 12가 3456">
       </div>
 
       <div class="checks" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
-        <!-- 🌟 윗줄 -->
         <label style="color:var(--origin);"><input type="checkbox" id="m_fire" ${v.fire?'checked':''}> 🔥 화재발생</label>
         <label style="color:var(--rollover);"><input type="checkbox" id="m_rollover" ${v.rollover?'checked':''}> 🔄 전복</label>
         <label style="color:var(--entrap);"><input type="checkbox" id="m_entrap" ${v.entrap?'checked':''}> ⚙️ 끼임</label>
         
-        <!-- 강제 줄바꿈 -->
         <div style="flex-basis: 100%; height: 0; margin: 0;"></div>
         
-        <!-- 🌟 아랫줄 -->
         <label style="color:#15803d;"><input type="checkbox" id="m_safety" ${v.safetyAction?'checked':''}> 🚧 안전조치</label>
         <label style="color:#ca8a04; font-weight:800;"><input type="checkbox" id="m_battery" ${v.batteryDisconnect?'checked':''}> 🔌 배터리차단</label>
       </div>
-      <div style="margin-top:16px;">
-        <label style="font-size:14px; color:var(--navy); border-bottom:1px solid #e2e8f0; padding-bottom:6px; margin-bottom:12px;">탑승자 개별 입력 (${v.passengers}명)</label>
-        <div id="modalPassengerList"></div>
+
+      <!-- 🌟 추가: 팝업창 내 탑승 인원수 조절 버튼 -->
+      <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--navy); padding-bottom:8px; margin-bottom:12px;">
+        <label style="font-size:15px; color:var(--navy); margin:0;">탑승자 개별 입력</label>
+        <div class="stepper-row">
+          <button type="button" class="step-btn" style="width:28px;height:28px;font-size:16px;" onclick="adjModalPassenger(-1)">−</button>
+          <span id="m_passengerCount" style="font-size:15px; font-weight:800; color:var(--navy); width:30px; text-align:center;">${v.passengers}</span>
+          <button type="button" class="step-btn" style="width:28px;height:28px;font-size:16px;" onclick="adjModalPassenger(1)">+</button>
+        </div>
       </div>
+      
+      <div id="modalPassengerList"></div>
+      
       <div class="modal-actions">
         <button type="button" class="secondary" onclick="closeEditor()">닫기 / 취소</button>
         <button type="button" onclick="saveEditor()">저장</button>
@@ -898,6 +903,82 @@ window.__cellClick = function(idx){
   openEditor(idx); 
 };
 
+// 🌟 [추가] 현황판 차량 추가/삭제 잠금 상태
+let isBoardLocked = true;
+
+function toggleBoardLock() {
+  if(isSpectator) return;
+  isBoardLocked = !isBoardLocked;
+  render();
+}
+
+// 🌟 [추가] 현황판에서 직접 차량 통째로 추가하기
+function addVehicleToBoard() {
+  if(isSpectator) return;
+  const nextId = vehicles.length + 1;
+  const newV = {
+    id: nextId,
+    type: '승용',
+    customType: '',
+    fuel: '휘발유',
+    plate: `미상 (차량${nextId})`,
+    passengers: 1,
+    safetyAction: false,
+    batteryDisconnect: false,
+    fire: false,
+    rollover: false,
+    entrap: false,
+    persons: [{ name: '', birthDate: '', age: '', gender: '남', status: 'normal', hospital: '' }]
+  };
+  vehicles.push(newV);
+  
+  // 설정 화면 쪽 데이터도 같이 동기화
+  setupVehicles.push({ type: '승용', customType: '', fuel: '휘발유', plate: '', passengers: 1 });
+  document.getElementById('vehicleCount').value = vehicles.length;
+  renderSetupVehicles();
+  
+  saveState();
+  render();
+}
+
+// 🌟 [추가] 현황판에서 맨 마지막 차량 통째로 삭제하기
+function removeVehicleFromBoard() {
+  if(isSpectator || vehicles.length <= 1) return alert("더 이상 삭제할 수 없습니다.");
+  if(confirm(`가장 마지막 차량(차량${vehicles.length})을 현황판에서 완전히 삭제하시겠습니까?`)) {
+    vehicles.pop();
+    setupVehicles.pop();
+    document.getElementById('vehicleCount').value = vehicles.length;
+    renderSetupVehicles();
+    
+    saveState();
+    render();
+  }
+}
+
+// 🌟 [추가] 팝업창에서 탑승 인원 증감 조절하기
+function adjModalPassenger(delta) {
+  const v = vehicles[editingIdx];
+  let p = v.passengers + delta;
+  if(p < 0) p = 0;
+  
+  // 인원수가 늘어나면 빈 사람 데이터 추가
+  while(v.persons.length < p) {
+    v.persons.push({ name: '', birthDate: '', age: '', gender: '남', status: 'normal', hospital: '' });
+  }
+  // 인원수가 줄어들면 사람 데이터 삭제
+  if(v.persons.length > p) {
+    v.persons.length = p;
+  }
+  
+  v.passengers = p;
+  setupVehicles[editingIdx].passengers = p; // 초기 설정 데이터도 동기화
+  
+  // 팝업창 숫자 즉시 업데이트
+  document.getElementById('m_passengerCount').innerText = p;
+  // 밑의 상세 정보 입력칸 다시 그리기
+  renderModalPassengers();
+}
+
 function render(){
   document.getElementById('toolbar').style.display='flex';
   const name = document.getElementById('accidentName').value.trim();
@@ -928,10 +1009,20 @@ function render(){
     <div class="stat-card severe"><div class="num">${severeCount}</div><div class="label">중상(명)</div></div>
   `;
 
+  // 🌟 추가: 수정 잠금 토글 버튼 렌더링
+  let lockBtnHtml = '';
+  if (!isSpectator) {
+    const lockBtnText = isBoardLocked ? '🔒 차량 추가/삭제 잠금해제' : '🔓 차량 수정 완료 (터치하여 고정)';
+    const lockBtnStyle = isBoardLocked ? 'background:#f8fafc; color:#64748b; border:1px solid #cbd5e1;' : 'background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-weight:bold; box-shadow: 0 0 8px rgba(239,68,68,0.4);';
+    lockBtnHtml = `<div style="text-align:right; margin-bottom:8px;">
+       <button type="button" onclick="toggleBoardLock()" style="padding:8px 14px; font-size:13px; border-radius:8px; cursor:pointer; ${lockBtnStyle}">${lockBtnText}</button>
+    </div>`;
+  }
+
   const totalCols = vehicles.length;
   let sizeTier = totalCols <= 3 ? 'tier-lg' : (totalCols <= 5 ? 'tier-md' : 'tier-sm');
 
-  let html = `<table class="board ${sizeTier} scroll-table"><tbody><tr>`;
+  let html = lockBtnHtml + `<table class="board ${sizeTier} scroll-table"><tbody><tr>`;
   html += `<td class="floor-cell">차량별 현황<br><span style="font-size:11.5px;font-weight:normal;color:#64748b;margin-top:6px;display:inline-block;">(칸 터치시 기록)</span></td>`;
 
   vehicles.forEach((v, idx) => {
@@ -968,6 +1059,14 @@ function render(){
       ${fireTag}${rolloverTag}${entrapTag}${safetyTag}${batteryTag}
     </td>`;
   });
+
+  // 🌟 추가: 잠금 해제 상태일 때 가장 오른쪽에 차량 추가/삭제 칸 띄우기
+  if (!isSpectator && !isBoardLocked) {
+      html += `<td style="vertical-align:middle; text-align:center; padding:0 12px; font-size:18px; background:rgba(241,245,249,0.7); border:2px dashed #cbd5e1; min-width:80px;">
+        <div onclick="addVehicleToBoard()" style="cursor:pointer; color:#0ea5e9; font-weight:800; margin-bottom:28px; padding:8px; border:1px solid #7dd3fc; border-radius:8px; background:#e0f2fe;" title="새 차량 추가">➕ 차량<br>추가</div>
+        <div onclick="removeVehicleFromBoard()" style="cursor:pointer; color:#ef4444; font-weight:800; padding:8px; border:1px solid #fca5a5; border-radius:8px; background:#fee2e2;" title="마지막 차량 삭제">➖ 마지막<br>삭제</div>
+      </td>`;
+  }
 
   html += `</tr></tbody></table>`;
   document.getElementById('boardHolder').innerHTML = html;
