@@ -161,10 +161,6 @@
   .header-dispatch-info .dispatch-label { color: #94a3b8; font-weight: 700; font-size: 11px; display: block; margin-bottom: 2px;}
   .header-dispatch-info .dispatch-val { color: #38bdf8; font-weight: 700; font-size: 14px; }
 
-  .legend{display:flex;justify-content:flex-end;gap:12px;margin-bottom:8px;font-size:12px;font-weight:600;flex-wrap:wrap;}
-  .legend span{display:inline-flex;align-items:center;gap:4px;}
-  .swatch{width:16px;height:16px;display:inline-block;border-radius:4px;}
-
   #boardHolder{
     overflow-x:auto;-webkit-overflow-scrolling:touch;
     border-radius:12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
@@ -203,10 +199,6 @@
   .origin-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;background:var(--origin);border-radius:6px;padding:4px 8px;margin-top:12px; font-size:12.5px;}
   .rollover-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;margin-top:6px;font-size:12.5px;background:var(--rollover);border-radius:6px;padding:4px 8px;}
   .entrap-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;margin-top:6px;font-size:12.5px;background:var(--entrap);border-radius:6px;padding:4px 8px;}
-
-  .legend .swatch.origin-sw{background:var(--origin);}
-  .legend .swatch.rollover-sw{background:var(--rollover);}
-  .legend .swatch.entrap-sw{background:var(--entrap);}
 
   #footNotes{margin-top:16px;font-size:13.5px;line-height:1.7;color:#475569;font-weight:600;}
   .toolbar{display:flex;gap:10px;margin-top:18px;justify-content:flex-end;}
@@ -313,9 +305,7 @@
   .safety-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;background:#15803d;border-radius:6px;padding:4px 8px;margin-top:6px; font-size:12.5px;}
   .battery-tag{color:#1e293b;font-weight:900;display:flex;align-items:center;justify-content:center;gap:4px;background:#facc15;border-radius:6px;padding:4px 8px;margin-top:6px; font-size:12.5px;}
  
-  .legend-break { display: none; }
   @media (max-width: 640px) and (orientation: portrait) {
-    .legend-break { display: block; flex-basis: 100%; height: 0; margin: 0; }
     .mobile-br { display: block; } /* 🌟 폰 세로에서만 줄을 바꿈 */
   }
   .mobile-br { display: none; } /* PC나 가로화면에서는 줄바꿈 무시 */
@@ -421,14 +411,6 @@
       </div>
 
       <div id="summaryCards" class="stat-cards"></div>
-      <div class="legend">
-        <span><span class="swatch origin-sw"></span>🔥 화재발생</span>
-        <span><span class="swatch rollover-sw"></span>🔄 전복</span>
-        <span><span class="swatch entrap-sw"></span>⚙️ 끼임</span>
-        <span class="legend-break"></span>
-        <span><span class="swatch" style="background:#15803d;"></span>🚧 안전조치</span>
-        <span><span class="swatch" style="background:#facc15;"></span>🔌 배터리차단</span>
-      </div>
 
       <div id="boardHolder"><div class="empty-hint">위 설정을 입력하고 "표 생성"을 누르세요.</div></div>
 
