@@ -834,7 +834,15 @@ function openEditor(idx){
       <h3>차량 상세 현황</h3>
       
       <div style="margin-bottom: 16px;">
-        <label style="font-size:12px; color:#64748b; font-weight:700; display:block; margin-bottom:6px;">차량명 및 번호 수정</label>
+        <label style="font-size:12px; color:#64748b; font-weight:700; display:block; margin-bottom:6px;">차종 / 연료 / 번호 수정</label>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <select id="m_type" style="flex:1; padding:10px 14px; border:1px solid #cbd5e1; border-radius:8px; font-weight:700; color:var(--navy); background:#f8fafc;">
+            ${TYPE_OPTIONS.map(opt => `<option value="${opt}" ${v.type===opt?'selected':''}>${opt}</option>`).join('')}
+          </select>
+          <select id="m_fuel" style="flex:1; padding:10px 14px; border:1px solid #cbd5e1; border-radius:8px; font-weight:700; color:var(--navy); background:#f8fafc;">
+            ${FUEL_OPTIONS.map(opt => `<option value="${opt}" ${v.fuel===opt?'selected':''}>${opt}</option>`).join('')}
+          </select>
+        </div>
         <input type="text" id="m_plate" value="${v.plate}" onfocus="if(this.value.indexOf('미상') !== -1) this.value='';" onclick="if(this.value.indexOf('미상') !== -1) this.value='';" ontouchstart="if(this.value.indexOf('미상') !== -1) this.value='';" style="font-size:15px; font-weight:800; color:var(--navy); padding:10px 14px; border:1px solid #cbd5e1; border-radius:8px; width:100%; box-sizing:border-box; background:#f8fafc;" placeholder="예: 쏘나타 12가 3456">
       </div>
 
@@ -915,6 +923,10 @@ function saveEditor(){
   // 🌟 입력칸에서 수정한 차량 이름/번호를 가져와서 저장 (다 지우면 기본값 세팅)
   const newPlate = document.getElementById('m_plate').value.trim();
   vehicles[editingIdx].plate = newPlate ? newPlate : "미상 (차량" + (editingIdx + 1) + ")";
+  
+  // 🌟 팝업창에서 수정한 차종과 연료 업데이트
+  vehicles[editingIdx].type = document.getElementById('m_type').value;
+  vehicles[editingIdx].fuel = document.getElementById('m_fuel').value;
 
   vehicles[editingIdx].safetyAction = document.getElementById('m_safety').checked;
   vehicles[editingIdx].batteryDisconnect = document.getElementById('m_battery').checked;
@@ -1212,7 +1224,17 @@ function copyReportText() {
   // 3. 차량별 상세 내역 작성
   vehicles.forEach((v, idx) => {
     let vType = v.type === '기타' ? (v.customType || '기타') : v.type;
-    report += `🚗 차량${idx+1} (${vType} / ${v.plate})\n`;
+    
+    // 🌟 차종별 맞춤 이모티콘 설정
+    let vEmoji = '🚗'; // 기본 승용차
+    if(v.type === '버스') vEmoji = '🚌';
+    else if(v.type === '화물') vEmoji = '🚚';
+    else if(v.type === '택시') vEmoji = '🚕';
+    else if(v.type === '오토바이') vEmoji = '🏍️';
+    else if(v.type === '자전거') vEmoji = '🚲';
+    else if(v.type === 'SUV') vEmoji = '🚙';
+
+    report += `${vEmoji} 차량${idx+1} (${vType} / ${v.plate})\n`;
     
     // 개별 차량 인원 집계
     let pSevere = 0, pMild = 0, pTreated = 0, pNormal = 0;
@@ -1226,7 +1248,7 @@ function copyReportText() {
     let pDetails = [];
     if(pSevere > 0) pDetails.push(`🔴중상 ${pSevere}`);
     if(pMild > 0) pDetails.push(`🟡경상 ${pMild}`);
-    if(pTreated > 0) pDetails.push(`🩹처치 ${pTreated}`);
+    if(pTreated > 0) pDetails.push(`🩹현장처치 ${pTreated}`);
     if(pNormal > 0) pDetails.push(`🟢양호 ${pNormal}`);
     
     report += ` · 탑승: ${v.passengers}명 ${pDetails.length > 0 ? '('+pDetails.join(', ')+')' : ''}\n`;
