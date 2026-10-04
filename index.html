@@ -543,7 +543,27 @@ function doLogout() {
   }
 }
 
+// 🌟 보안: 오늘 날짜(월+일 4자리)로 자동 생성되는 암호
+function getDailyPin() {
+  const today = new Date();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  return mm + dd; 
+}
+
 function enterSpectatorMode() {
+  const dailyPin = getDailyPin();
+  
+  // 🌟 힌트와 예시를 삭제하고 단호하게 변경
+  const pwd = prompt("👀 관전 모드 접속 암호를 입력하세요.\n(모르실 경우 지휘차 또는 조사팀에 문의하세요)");
+  
+  // 취소를 누르거나 암호가 틀리면 차단
+  if(pwd !== dailyPin) { 
+    alert("❌ 암호가 일치하지 않아 접근이 차단됩니다.");
+    return; 
+  }
+
+  // 암호가 맞으면 화면을 띄워줌
   isSpectator = true;
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('mainWrap').style.display = 'block';
