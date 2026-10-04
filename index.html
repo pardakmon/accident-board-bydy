@@ -1258,8 +1258,6 @@ function copyReportText() {
     if(v.fire) specs.push('🔥화재발생');
     if(v.rollover) specs.push('🔄전복');
     if(v.entrap) specs.push('⚙️️끼임');
-    if(v.safetyAction) specs.push('🚧안전조치');
-    if(v.batteryDisconnect) specs.push('🔌배터리차단');
     
     if(specs.length > 0) {
       report += ` · 특이: ${specs.join(', ')}\n`;
