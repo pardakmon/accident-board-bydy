@@ -284,7 +284,10 @@
     .stat-card{min-width:45%; padding:14px 10px 12px;}
     .v-setup-inputs > div { width:48%; }
     .v-setup-inputs > div.full-w { width:100%; }
-    .toolbar button{flex:1;}
+    
+    /* 🌟 스마트폰 화면에서 하단 버튼 4개를 2x2 격자로 넓고 예쁘게 배치 */
+    .toolbar { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .toolbar button { width: 100%; font-size: 13px; padding: 12px 4px; word-break: keep-all; margin: 0; }
   }
   @media (min-width: 641px){
     .board-header { padding:20px 24px; }
@@ -419,9 +422,25 @@
       <div id="autosaveNote" style="font-size:11px;color:#94a3b8;text-align:right;margin-top:10px;font-weight:600;"></div>
     </div> <!-- 알맹이 구역 끝 -->
 
-    <div class="toolbar" id="toolbar" style="display:none; flex-wrap: wrap;">
-      <button type="button" class="success-outline" onclick="captureBoard()" style="color:#10b981; border-color:#34d399; background:#fff; border:1px solid #34d399;">📷 전체 화면 캡처</button>
+<!-- 🌟 하단 여백(margin-bottom: 80px) 확보 -->
+    <div class="toolbar" id="toolbar" style="display:none; flex-wrap: wrap; margin-bottom: 80px;">
+      <button type="button" style="background:#f8fafc; color:#3b82f6; border:1px solid #93c5fd; font-weight:bold;" onclick="copyReportText()">📝 상황보고 복사</button>
+      <button type="button" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-weight:bold;" onclick="openTimeline()">⏱️ 타임라인(일지)</button>
+      <button type="button" style="background:#ffffff; color:#10b981; border:1px solid #34d399; font-weight:bold;" onclick="captureBoard()">📷 전체 화면 캡처</button>
       <button type="button" class="danger" onclick="resetAll()">초기화 (DB 삭제)</button>
+    </div>
+  </div>
+</div>
+
+<!-- 🌟 타임라인 팝업창 추가 -->
+<div id="timelineOverlay" class="overlay" style="display:none; z-index:30000;">
+  <div class="modal" style="width:90vw; max-width:400px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--navy); padding-bottom:10px; margin-bottom:12px;">
+      <h3 style="margin:0; font-size:16px;">⏱️ 상황 일지 (타임라인)</h3>
+      <button type="button" class="small secondary" onclick="document.getElementById('timelineOverlay').style.display='none'">닫기</button>
+    </div>
+    <div id="timelineList" style="max-height:60vh; overflow-y:auto; font-size:12.5px; line-height:1.5; color:#334155;">
+      <!-- 기록이 여기에 쌓입니다 -->
     </div>
   </div>
 </div>
@@ -900,6 +919,10 @@ function saveEditor(){
   vehicles[editingIdx].fire = document.getElementById('m_fire').checked;
   vehicles[editingIdx].rollover = document.getElementById('m_rollover').checked;
   vehicles[editingIdx].entrap = document.getElementById('m_entrap').checked;
+  
+  // 🌟 (추가) 차량 정보 수정 시 타임라인 자동 기록
+  writeLog('차량 현황 수정', `${vehicles[editingIdx].plate} 상세 정보 업데이트`);
+
   closeEditor();
   render();
   if (typeof window.saveState === 'function') { window.saveState(); }
@@ -1146,6 +1169,100 @@ function startDatabaseListener() {
 window.addEventListener('DOMContentLoaded', ()=>{
   // 초기 렌더링 대기
 });
+
+// ==========================================
+// 🌟 [추가 기능 1] 상황보고 텍스트 자동 요약 (교통사고용)
+// ==========================================
+function copyReportText() {
+  const bldg = document.getElementById('accidentName').value || '장소 미상';
+  const dTime = document.getElementById('dispatchTime').value || '시간 미상';
+
+  let totalVehicles = vehicles.length;
+  let totalPersons = 0, severeCount = 0, mildCount = 0, treatedCount = 0;
+  let fireCount = 0, rolloverCount = 0, entrapCount = 0;
+  let safetyCount = 0, batteryCount = 0;
+
+  vehicles.forEach(v => {
+    if(v.fire) fireCount++;
+    if(v.rollover) rolloverCount++;
+    if(v.entrap) entrapCount++;
+    if(v.safetyAction) safetyCount++;
+    if(v.batteryDisconnect) batteryCount++;
+
+    (v.persons || []).forEach(p => {
+      totalPersons++;
+      if(p.status === 'severe') severeCount++;
+      else if(p.status === 'mild') mildCount++;
+      else if(p.status === 'treated') treatedCount++;
+    });
+  });
+
+  let report = `[상황보고] ${bldg}\n`;
+  report += `- 신고일시: ${dTime}\n`;
+  report += `- 관련차량: 총 ${totalVehicles}대\n`;
+  
+  let otherCount = totalPersons - severeCount - mildCount - treatedCount;
+  report += `- 탑승인원: 총 ${totalPersons}명\n`;
+  report += `  · 중상 ${severeCount}명, 경상 ${mildCount}명, 현장처치 ${treatedCount}명, 양호(기타) ${otherCount}명\n`;
+
+  let specifics = [];
+  if(fireCount > 0) specifics.push(`화재발생(${fireCount}대)`);
+  if(rolloverCount > 0) specifics.push(`전복(${rolloverCount}대)`);
+  if(entrapCount > 0) specifics.push(`끼임(${entrapCount}대)`);
+  
+  report += `- 특이사항: ${specifics.length ? specifics.join(', ') : '없음'}\n`;
+  report += `- 현장통제: 안전조치(${safetyCount}대), 배터리차단(${batteryCount}대)\n`;
+
+  const ta = document.createElement("textarea");
+  ta.value = report;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand("copy");
+  document.body.removeChild(ta);
+  
+  alert("✅ 상황보고 텍스트가 복사되었습니다.\n입력창에 '붙여넣기' 하세요.");
+}
+
+// ==========================================
+// 🌟 [추가 기능 2] 타임라인 기록 및 조회 (교통사고용)
+// ==========================================
+const logRef = db.ref('accident_board/logs'); // 데이터베이스 덮어쓰기 방지
+
+function writeLog(actionType, message) {
+  if (typeof isSpectator !== 'undefined' && isSpectator) return;
+  const now = new Date();
+  const tStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  
+  logRef.push({
+    time: tStr,
+    action: actionType,
+    msg: message
+  });
+}
+
+function openTimeline() {
+  const overlay = document.getElementById('timelineOverlay');
+  const list = document.getElementById('timelineList');
+  overlay.style.display = 'flex';
+  list.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">불러오는 중...</div>';
+  
+  logRef.once('value').then(snap => {
+    const logs = snap.val();
+    if (!logs) {
+      list.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">아직 기록된 일지가 없습니다.</div>';
+      return;
+    }
+    const logArr = Object.values(logs).reverse();
+    list.innerHTML = logArr.map(L => `
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; margin-bottom:8px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-weight:800; font-size:11.5px; color:#64748b;">
+          <span>🕒 ${L.time}</span>
+        </div>
+        <div><strong style="color:var(--navy);">${L.action}</strong>: ${L.msg}</div>
+      </div>
+    `).join('');
+  });
+}
 </script>
 </body>
 </html>
