@@ -194,8 +194,9 @@
   .p-view-item strong { color:#0f172a; font-size:13.5px;}
   .p-view-item .p-status-severe { color:var(--rescue); font-weight:800; }
   .p-view-item .p-status-mild { color:#d97706; font-weight:800; }
+  .p-view-item .p-status-treated { color:#0284c7; font-weight:700; } /* 🌟 현장처치 파란색 표시 */
   .p-view-item .p-status-normal { color:#64748b; font-weight:600; }
-
+  
   .origin-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;background:var(--origin);border-radius:6px;padding:4px 8px;margin-top:12px; font-size:12.5px;}
   .rollover-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;margin-top:6px;font-size:12.5px;background:var(--rollover);border-radius:6px;padding:4px 8px;}
   .entrap-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;margin-top:6px;font-size:12.5px;background:var(--entrap);border-radius:6px;padding:4px 8px;}
@@ -456,10 +457,12 @@ const TYPE_OPTIONS = ['승용', 'SUV', '버스', '택시', '화물', '오토바�
 const FUEL_OPTIONS = ['휘발유', '경유', 'LPG', '하이브리드', '전기', '기타'];
 const GENDER_OPTIONS = ['남', '여', '미상'];
 const STATUS_OPTIONS = [
-  {val: 'normal', label: '이상없음'},
+  {val: 'normal', label: '🟢 이상없음'},
+  {val: 'treated', label: '🩹 현장처치'},
   {val: 'mild', label: '🟡 경상'},
   {val: 'severe', label: '🔴 중상'}
 ];
+const AMBULANCE_OPTIONS = ['미선택', '영등포1', '영등포2', '여의도1', '당산1', '대림1', '대림2', '신길1', '기타'];
 
 // --- [페이지 열릴 당시의 현재 시간을 신고접수일시에 자동 세팅] ---
 window.addEventListener('DOMContentLoaded', () => {
@@ -867,13 +870,18 @@ function renderModalPassengers(){
           </select>
         </div>
       </div>
-      <div class="p-form-row">
+<div class="p-form-row">
         <div style="flex:1;"><label>부상정도</label>
-          <select onchange="updatePerson(${pIdx}, 'status', this.value)" style="${p.status==='severe'?'color:#e11d48;font-weight:bold;':(p.status==='dead'?'color:#475569;font-weight:bold;':'')}">
+          <select onchange="updatePerson(${pIdx}, 'status', this.value)" style="${p.status==='severe'?'color:#e11d48;font-weight:bold;':(p.status==='dead'?'color:#475569;font-weight:bold;':'')}; padding:10px 4px;">
             ${STATUS_OPTIONS.map(opt => `<option value="${opt.val}" ${p.status===opt.val?'selected':''}>${opt.label}</option>`).join('')}
           </select>
         </div>
-        <div style="flex:2;"><label>병원이송 기록</label><input type="text" placeholder="예: 성모병원" value="${p.hospital}" oninput="updatePerson(${pIdx}, 'hospital', this.value)"></div>
+        <div style="flex:1.1;"><label>구급대</label>
+          <select onchange="updatePerson(${pIdx}, 'ambulance', this.value)" style="padding:10px 4px; color:#1e40af; font-weight:600;">
+            ${AMBULANCE_OPTIONS.map(opt => `<option value="${opt}" ${(p.ambulance||'미선택')===opt?'selected':''}>${opt}</option>`).join('')}
+          </select>
+        </div>
+        <div style="flex:1.4;"><label>병원이송 기록</label><input type="text" placeholder="예: 성모병원" value="${p.hospital}" oninput="updatePerson(${pIdx}, 'hospital', this.value)" style="padding:10px 6px;"></div>
       </div>
     </div>
   `).join('');
@@ -1046,9 +1054,16 @@ function render(){
         let pName = p.name || `탑승자${i+1}`;
         let pAge = p.age ? `${p.age}세` : '';
         let pGender = p.gender;
-        let pInfo = [pAge, pGender].filter(Boolean).join('/');
+let pInfo = [pAge, pGender].filter(Boolean).join('/');
         if(pInfo) pInfo = `(${pInfo})`;
-        let hospHtml = p.hospital ? `<div style="margin-top:3px; color:#1e40af; font-weight:700;">🏥 ${p.hospital}</div>` : '';
+        
+        // 🌟 구급대와 병원 텍스트를 조합해서 한 줄에 출력
+        let ambText = (p.ambulance && p.ambulance !== '미선택') ? `🚑${p.ambulance} ` : '';
+        let hospText = p.hospital ? `🏥${p.hospital}` : '';
+        let extInfo = ambText + hospText;
+        
+        let hospHtml = extInfo ? `<div style="margin-top:3px; color:#1e40af; font-weight:700;">${extInfo}</div>` : '';
+        
         return `<div class="p-view-item"><strong>${pName}</strong> <span style="color:#64748b;">${pInfo}</span><br><span class="${statusCls}">${statusText}</span>${hospHtml}</div>`;
       }).join('');
     }
