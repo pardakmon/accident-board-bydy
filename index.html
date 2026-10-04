@@ -1211,7 +1211,6 @@ function copyReportText() {
   if(entrapCount > 0) specifics.push(`끼임(${entrapCount}대)`);
   
   report += `- 특이사항: ${specifics.length ? specifics.join(', ') : '없음'}\n`;
-  report += `- 현장통제: 안전조치(${safetyCount}대), 배터리차단(${batteryCount}대)\n`;
 
   const ta = document.createElement("textarea");
   ta.value = report;
