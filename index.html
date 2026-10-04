@@ -1173,49 +1173,80 @@ window.addEventListener('DOMContentLoaded', ()=>{
 });
 
 // ==========================================
-// 🌟 [추가 기능 1] 상황보고 텍스트 자동 요약 (교통사고용)
+// 🌟 [추가 기능 1] 상황보고 텍스트 자동 요약 (차량별 분리형)
 // ==========================================
 function copyReportText() {
   const bldg = document.getElementById('accidentName').value || '장소 미상';
   const dTime = document.getElementById('dispatchTime').value || '시간 미상';
 
   let totalVehicles = vehicles.length;
-  let totalPersons = 0, severeCount = 0, mildCount = 0, treatedCount = 0;
-  let fireCount = 0, rolloverCount = 0, entrapCount = 0;
-  let safetyCount = 0, batteryCount = 0;
+  let totalPersons = 0, totalSevere = 0, totalMild = 0, totalTreated = 0, totalNormal = 0;
 
+  // 1. 전체 통계 집계
   vehicles.forEach(v => {
-    if(v.fire) fireCount++;
-    if(v.rollover) rolloverCount++;
-    if(v.entrap) entrapCount++;
-    if(v.safetyAction) safetyCount++;
-    if(v.batteryDisconnect) batteryCount++;
-
     (v.persons || []).forEach(p => {
       totalPersons++;
-      if(p.status === 'severe') severeCount++;
-      else if(p.status === 'mild') mildCount++;
-      else if(p.status === 'treated') treatedCount++;
+      if(p.status === 'severe') totalSevere++;
+      else if(p.status === 'mild') totalMild++;
+      else if(p.status === 'treated') totalTreated++;
+      else totalNormal++;
     });
   });
 
+  // 2. 전체 요약 작성
   let report = `[상황보고] ${bldg}\n`;
   report += `- 신고일시: ${dTime}\n`;
-  report += `- 관련차량: 총 ${totalVehicles}대\n`;
+  report += `- 전체상황: 차량 ${totalVehicles}대 / 탑승 총 ${totalPersons}명\n`;
   
-  let otherCount = totalPersons - severeCount - mildCount - treatedCount;
-  report += `- 탑승인원: 총 ${totalPersons}명\n`;
-  report += `  · 중상 ${severeCount}명, 경상 ${mildCount}명, 현장처치 ${treatedCount}명, 양호(기타) ${otherCount}명\n`;
+  let tDetails = [];
+  if(totalSevere > 0) tDetails.push(`중상 ${totalSevere}명`);
+  if(totalMild > 0) tDetails.push(`경상 ${totalMild}명`);
+  if(totalTreated > 0) tDetails.push(`현장처치 ${totalTreated}명`);
+  if(totalNormal > 0) tDetails.push(`양호 ${totalNormal}명`);
+  
+  if(tDetails.length > 0) report += `  (${tDetails.join(', ')})\n\n`;
+  else report += `\n`;
 
-  let specifics = [];
-  if(fireCount > 0) specifics.push(`화재발생(${fireCount}대)`);
-  if(rolloverCount > 0) specifics.push(`전복(${rolloverCount}대)`);
-  if(entrapCount > 0) specifics.push(`끼임(${entrapCount}대)`);
-  
-  report += `- 특이사항: ${specifics.length ? specifics.join(', ') : '없음'}\n`;
+  report += `[차량별 현황]\n`;
+
+  // 3. 차량별 상세 내역 작성
+  vehicles.forEach((v, idx) => {
+    let vType = v.type === '기타' ? (v.customType || '기타') : v.type;
+    report += `🚗 차량${idx+1} (${vType} / ${v.plate})\n`;
+    
+    // 개별 차량 인원 집계
+    let pSevere = 0, pMild = 0, pTreated = 0, pNormal = 0;
+    (v.persons || []).forEach(p => {
+      if(p.status === 'severe') pSevere++;
+      else if(p.status === 'mild') pMild++;
+      else if(p.status === 'treated') pTreated++;
+      else pNormal++;
+    });
+    
+    let pDetails = [];
+    if(pSevere > 0) pDetails.push(`🔴중상 ${pSevere}`);
+    if(pMild > 0) pDetails.push(`🟡경상 ${pMild}`);
+    if(pTreated > 0) pDetails.push(`🩹처치 ${pTreated}`);
+    if(pNormal > 0) pDetails.push(`🟢양호 ${pNormal}`);
+    
+    report += ` · 탑승: ${v.passengers}명 ${pDetails.length > 0 ? '('+pDetails.join(', ')+')' : ''}\n`;
+
+    // 개별 차량 특이사항 집계
+    let specs = [];
+    if(v.fire) specs.push('🔥화재발생');
+    if(v.rollover) specs.push('🔄전복');
+    if(v.entrap) specs.push('⚙️️끼임');
+    if(v.safetyAction) specs.push('🚧안전조치');
+    if(v.batteryDisconnect) specs.push('🔌배터리차단');
+    
+    if(specs.length > 0) {
+      report += ` · 특이: ${specs.join(', ')}\n`;
+    }
+    report += `\n`; // 차량과 차량 사이 빈칸
+  });
 
   const ta = document.createElement("textarea");
-  ta.value = report;
+  ta.value = report.trim(); // 맨 끝에 남는 쓸데없는 빈칸 제거
   document.body.appendChild(ta);
   ta.select();
   document.execCommand("copy");
