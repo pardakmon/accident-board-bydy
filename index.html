@@ -43,16 +43,16 @@
     overflow: hidden; 
   }
   
-  /* 🌟 확실하게 캡처되는 투명 도화지 (워터마크) 구역 */
+/* 🌟 확실하게 캡처되는 투명 도화지 (워터마크) 구역 */
   .watermark-bg {
     position: absolute !important;
     top: 0; left: 0; right: 0; bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.15;
-    z-index: 0 !important;
-    pointer-events: none;
+    opacity: 0.2; /* 🌟 마크가 살짝 더 잘 보이도록 진하게(0.15 -> 0.2) 조절 */
+    z-index: 99 !important; /* 🌟 표(z-index:1)보다 무조건 앞으로 오도록 순서 끌어올리기! */
+    pointer-events: none; /* 클릭은 그대로 표로 통과되게 유지 */
   }
   
   /* 모바일에서도 작아지지 않게 min-width 적용 */
@@ -64,12 +64,11 @@
     align-items: center;
   }
   
-  /* 알맹이 구역 안의 요소들은 워터마크보다 위로 올라오게 설정 */
   #captureTarget > * {
     position: relative;
-    z-index: 1;
+    z-index: 1; /* 표나 칸들은 1층에 배치 */
   }
-
+  
   .wrap{max-width:1200px;margin:0 auto; position: relative; z-index: 1;}
   h1 { font-size:26px; font-weight:700; letter-spacing:-0.5px; margin:0 0 24px; color:#1d1d1f; }
   
@@ -890,7 +889,7 @@ function renderModalPassengers(){
   }
 box.innerHTML = personsArr.map((p, pIdx) => `
     <div class="p-form-card">
-      <div class="p-form-header"><span style="font-weight:900; ${pIdx === 0 ? 'color:#0ea5e9;' : ''}">${pIdx === 0 ? '👤 운전자' : '👤 탑승자 ' + (pIdx+1)}</span></div>
+      <div class="p-form-header"><span style="font-weight:900;">${pIdx === 0 ? '👤 운전자' : '👤 탑승자 ' + (pIdx+1)}</span></div>
       <div class="p-form-row">
         <div class="flex-lg"><label>이름</label><input type="text" placeholder="${pIdx === 0 ? '이름 (운전자)' : '이름'}" value="${p.name}" oninput="updatePerson(${pIdx}, 'name', this.value)"></div>
         <div class="flex-lg"><label>생년월일</label><input type="text" inputmode="numeric" maxlength="8" id="dob_input_${pIdx}" placeholder="예)19900101" value="${p.birthDate || ''}" oninput="handleDobChange(${pIdx}, this.value)"></div>
