@@ -886,11 +886,11 @@ function renderModalPassengers(){
     box.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px;">입력된 탑승 인원이 없습니다.</div>`;
     return;
   }
-  box.innerHTML = v.persons.map((p, pIdx) => `
+box.innerHTML = personsArr.map((p, pIdx) => `
     <div class="p-form-card">
-      <div class="p-form-header"><span>👤 탑승자 ${pIdx+1}</span></div>
+      <div class="p-form-header"><span style="font-weight:900; ${pIdx === 0 ? 'color:#0ea5e9;' : ''}">${pIdx === 0 ? '👤 운전자' : '👤 탑승자 ' + (pIdx+1)}</span></div>
       <div class="p-form-row">
-        <div class="flex-lg"><label>이름</label><input type="text" placeholder="이름" value="${p.name}" oninput="updatePerson(${pIdx}, 'name', this.value)"></div>
+        <div class="flex-lg"><label>이름</label><input type="text" placeholder="${pIdx === 0 ? '이름 (운전자)' : '이름'}" value="${p.name}" oninput="updatePerson(${pIdx}, 'name', this.value)"></div>
         <div class="flex-lg"><label>생년월일</label><input type="text" inputmode="numeric" maxlength="8" id="dob_input_${pIdx}" placeholder="예)19900101" value="${p.birthDate || ''}" oninput="handleDobChange(${pIdx}, this.value)"></div>
         <div class="flex-sm"><label>만 나이</label><input type="text" id="age_input_${pIdx}" placeholder="자동" value="${p.age}" readonly style="background:#e2e8f0; color:#475569;"></div>
         <div class="flex-sm"><label>성별</label>
@@ -1081,14 +1081,29 @@ function render(){
 
   vehicles.forEach((v, idx) => {
     const displayType = v.type === '기타' ? (v.customType || '기타') : v.type;
-    let pListHtml = '';
-    if(v.persons.length === 0){
+let pListHtml = '';
+    
+    // 🌟 파이어베이스 빈 배열 에러 방어막 추가
+    const personsArr = v.persons || [];
+    
+    if(personsArr.length === 0){
       pListHtml = `<div class="p-view-item" style="color:#94a3b8; text-align:center;">탑승자 0명</div>`;
     } else {
-      pListHtml = v.persons.map((p, i) => {
+      pListHtml = personsArr.map((p, i) => {
         let statusCls = `p-status-${p.status}`;
-        let statusText = STATUS_OPTIONS.find(opt => opt.val === p.status).label;
-        let pName = p.name || `탑승자${i+1}`;
+        
+        // 🌟 과거 데이터 충돌 시 뻗지 않도록 방어막 추가
+        let statusObj = STATUS_OPTIONS.find(opt => opt.val === p.status) || STATUS_OPTIONS[0];
+        let statusText = statusObj.label;
+        
+        // 🌟 [핵심] 첫 번째(i===0)는 무조건 운전자, 나머지는 탑승자로 표기
+        let pName = '';
+        if (i === 0) {
+          pName = p.name ? `운전자(${p.name})` : '운전자';
+        } else {
+          pName = p.name || `탑승자${i+1}`;
+        }
+        
         let pAge = p.age ? `${p.age}세` : '';
         let pGender = p.gender;
 let pInfo = [pAge, pGender].filter(Boolean).join('/');
