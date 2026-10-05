@@ -882,7 +882,9 @@ function openEditor(idx){
 function renderModalPassengers(){
   const v = vehicles[editingIdx];
   const box = document.getElementById('modalPassengerList');
-  if(v.persons.length === 0){
+  const personsArr = v.persons || [];
+  
+  if(personsArr.length === 0){
     box.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px;">입력된 탑승 인원이 없습니다.</div>`;
     return;
   }
