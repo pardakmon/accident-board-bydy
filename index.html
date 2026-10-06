@@ -823,6 +823,33 @@ function handleDobChange(pIdx, val) {
   }
 }
 
+// 🌟 [신규] 나이 직접 입력 시 생년월일(YYYY0101) 자동 역산 로직
+function handleAgeChange(pIdx, val) {
+  val = val.replace(/[^0-9]/g, ''); // 숫자만 입력되게 필터링
+  const inputEl = document.getElementById(`age_input_${pIdx}`);
+  if(inputEl) inputEl.value = val;
+  
+  vehicles[editingIdx].persons[pIdx].age = val;
+
+  if(val.length > 0) {
+    const currentYear = new Date().getFullYear();
+    const ageNum = parseInt(val, 10);
+    
+    // 올해 연도에서 나이를 빼서 출생연도를 구하고, '0101'을 무조건 붙임
+    const birthYear = currentYear - ageNum;
+    const generatedDob = birthYear + "0101"; 
+    
+    vehicles[editingIdx].persons[pIdx].birthDate = generatedDob;
+    const dobEl = document.getElementById(`dob_input_${pIdx}`);
+    if(dobEl) dobEl.value = generatedDob;
+  } else {
+    // 나이 칸을 싹 지우면 생년월일 칸도 깔끔하게 초기화
+    vehicles[editingIdx].persons[pIdx].birthDate = '';
+    const dobEl = document.getElementById(`dob_input_${pIdx}`);
+    if(dobEl) dobEl.value = '';
+  }
+}
+
 function openEditor(idx){
   editingIdx = idx;
   const v = vehicles[idx];
@@ -894,7 +921,8 @@ box.innerHTML = personsArr.map((p, pIdx) => `
       <div class="p-form-row">
         <div class="flex-lg"><label>이름</label><input type="text" placeholder="${pIdx === 0 ? '이름 (운전자)' : '이름'}" value="${p.name}" oninput="updatePerson(${pIdx}, 'name', this.value)"></div>
         <div class="flex-lg"><label>생년월일</label><input type="text" inputmode="numeric" maxlength="8" id="dob_input_${pIdx}" placeholder="예)19900101" value="${p.birthDate || ''}" oninput="handleDobChange(${pIdx}, this.value)"></div>
-        <div class="flex-sm"><label>만 나이</label><input type="text" id="age_input_${pIdx}" placeholder="자동" value="${p.age}" readonly style="background:#e2e8f0; color:#475569;"></div>
+        <!-- 🌟 만 나이 입력칸: readonly 속성을 지우고, 색상을 하얗게 만들고, oninput 이벤트(직접 입력 감지)를 추가했습니다 -->
+        <div class="flex-sm"><label>만 나이</label><input type="text" inputmode="numeric" maxlength="3" id="age_input_${pIdx}" placeholder="나이 입력" value="${p.age}" oninput="handleAgeChange(${pIdx}, this.value)"></div>
         <div class="flex-sm"><label>성별</label>
           <select onchange="updatePerson(${pIdx}, 'gender', this.value)">
             ${GENDER_OPTIONS.map(opt => `<option value="${opt}" ${p.gender===opt?'selected':''}>${opt}</option>`).join('')}
