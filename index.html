@@ -1106,7 +1106,8 @@ function render(){
   const totalCols = vehicles.length;
   let sizeTier = totalCols <= 3 ? 'tier-lg' : (totalCols <= 5 ? 'tier-md' : 'tier-sm');
 
-  let html = lockBtnHtml + `<table class="board ${sizeTier} scroll-table"><tbody><tr>`;
+  // 🌟 모바일 잘림 방지를 위해 lockBtnHtml을 여기서 뺐습니다.
+  let html = `<table class="board ${sizeTier} scroll-table"><tbody><tr>`;
   html += `<td class="floor-cell">차량별 현황<br><span style="font-size:11.5px;font-weight:normal;color:#64748b;margin-top:6px;display:inline-block;">(칸 터치시 기록)</span></td>`;
 
   vehicles.forEach((v, idx) => {
@@ -1176,10 +1177,21 @@ let pInfo = [pAge, pGender].filter(Boolean).join('/');
 
 html += `</tr></tbody></table>`;
   
+  // 🌟 표 먼저 렌더링 완료
   document.getElementById('boardHolder').innerHTML = html;
+
+  // 🌟 iOS 세로화면 잘림 현상 완벽 해결: 표 안쪽이 아닌 화면 전체 영역에 버튼과 90px 여백을 띄움
+  let safeBtnArea = document.getElementById('safeLockBtnArea');
+  if(!safeBtnArea) {
+    safeBtnArea = document.createElement('div');
+    safeBtnArea.id = 'safeLockBtnArea';
+    document.body.appendChild(safeBtnArea);
+  }
+  safeBtnArea.innerHTML = `<div style="height: 90px;"></div>` + lockBtnHtml;
 }
 
 window.saveState = function() {
+
   try {
     const state = {
       accidentName: document.getElementById('accidentName').value,
