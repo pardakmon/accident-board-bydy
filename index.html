@@ -1180,12 +1180,13 @@ html += `</tr></tbody></table>`;
   // 🌟 표 먼저 렌더링 완료
   document.getElementById('boardHolder').innerHTML = html;
 
-// 🌟 iOS 세로화면 잘림 현상 완벽 해결: 표 안쪽이 아닌 화면 전체 영역에 버튼과 40px 여백을 띄움
+// 🌟 iOS 세로화면 잘림 현상 완벽 해결: 표 안쪽이 아닌 현황판 화면(boardScreen) 안에 버튼을 띄움
   let safeBtnArea = document.getElementById('safeLockBtnArea');
   if(!safeBtnArea) {
     safeBtnArea = document.createElement('div');
     safeBtnArea.id = 'safeLockBtnArea';
-    document.body.appendChild(safeBtnArea);
+    // 🌟 body(전체 화면) 대신 boardScreen(현황판 화면)에만 버튼을 붙여넣어 설정 화면에서는 숨깁니다!
+    document.getElementById('boardScreen').appendChild(safeBtnArea);
   }
   safeBtnArea.innerHTML = `<div style="height: 40px;"></div>` + lockBtnHtml;
 }
