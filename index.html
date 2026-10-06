@@ -1106,8 +1106,7 @@ function render(){
   const totalCols = vehicles.length;
   let sizeTier = totalCols <= 3 ? 'tier-lg' : (totalCols <= 5 ? 'tier-md' : 'tier-sm');
 
-  // 🌟 표 시작 부분에서 억지로 묶어두었던 잠금버튼(lockBtnHtml) 제거
-  let html = `<table class="board ${sizeTier} scroll-table"><tbody><tr>`;
+  let html = lockBtnHtml + `<table class="board ${sizeTier} scroll-table"><tbody><tr>`;
   html += `<td class="floor-cell">차량별 현황<br><span style="font-size:11.5px;font-weight:normal;color:#64748b;margin-top:6px;display:inline-block;">(칸 터치시 기록)</span></td>`;
 
   vehicles.forEach((v, idx) => {
