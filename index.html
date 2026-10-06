@@ -1092,13 +1092,14 @@ function render(){
   if (!isSpectator) {
     const lockBtnText = isBoardLocked ? '🔒 차량 수정 잠금해제' : '🔓 수정 완료 (터치하여 잠금)';
     
+    // 원래의 반투명하고 둥근 예쁜 디자인 복구
     const lockBtnStyle = isBoardLocked 
-        ? 'background:#ffffff; color:#475569; border:1px solid #cbd5e1; box-shadow:0 2px 4px rgba(0,0,0,0.05);' 
+        ? 'background:rgba(255,255,255,0.9); color:#475569; border:1px solid #cbd5e1; box-shadow:0 4px 12px rgba(0,0,0,0.1);' 
         : 'background:#ef4444; color:#fff; border:none; box-shadow:0 4px 12px rgba(239,68,68,0.4);';
     
-    // 🌟 핵심: 브라우저 메뉴바에 가려지지 않도록 표 바로 윗부분(좌측)에 단단하게 고정 배치 (가로 스크롤 시에도 따라오게 sticky 적용)
-    lockBtnHtml = `<div style="position:sticky; left:0; text-align:left; padding-bottom:12px;" data-html2canvas-ignore="true">
-       <button type="button" onclick="toggleBoardLock()" style="padding:10px 18px; font-size:13.5px; font-weight:800; border-radius:20px; cursor:pointer; transition:all 0.2s ease; ${lockBtnStyle}">${lockBtnText}</button>
+    // 🌟 핵심: 하단 중앙 고정 방식(fixed) 복구 + 모바일 브라우저 메뉴바를 피하기 위해 bottom을 90px로 넉넉하게 띄움 (아이폰 하단 홈바도 자동 계산)
+    lockBtnHtml = `<div style="position:fixed; bottom:max(90px, env(safe-area-inset-bottom) + 70px); left:50%; transform:translateX(-50%); z-index:9999;" data-html2canvas-ignore="true">
+       <button type="button" onclick="toggleBoardLock()" style="padding:12px 24px; font-size:14px; font-weight:800; border-radius:30px; cursor:pointer; backdrop-filter:blur(4px); transition:all 0.2s ease; ${lockBtnStyle}">${lockBtnText}</button>
     </div>`;
   }
   
