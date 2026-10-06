@@ -205,6 +205,7 @@
 
   #footNotes{margin-top:16px;font-size:13.5px;line-height:1.7;color:#475569;font-weight:600;}
   .toolbar{display:flex;gap:10px;margin-top:18px;justify-content:flex-end;}
+  .toolbar button { min-width: 165px; } /* 🌟 PC에서 버튼 4개의 너비를 똑같이 통일 */
   .empty-hint{color:#94a3b8;font-size:14px;text-align:center;padding:40px 0;font-weight:600;}
   .credit-line{text-align:center;font-size:12px;color:#94a3b8;margin:20px 0 10px;letter-spacing:0.5px;font-weight:600;}
 
@@ -289,7 +290,7 @@
     
     /* 🌟 스마트폰 화면에서 하단 버튼 4개를 2x2 격자로 넓고 예쁘게 배치 */
     .toolbar { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .toolbar button { width: 100%; font-size: 13px; padding: 12px 4px; word-break: keep-all; margin: 0; }
+    .toolbar button { width: 100%; font-size: 13px; padding: 12px 4px; word-break: keep-all; min-width: 0; margin: 0; }
   }
   @media (min-width: 641px){
     .board-header { padding:20px 24px; }
@@ -427,7 +428,7 @@
 <!-- 🌟 하단 여백(margin-bottom: 80px) 확보 -->
     <div class="toolbar" id="toolbar" style="display:none; flex-wrap: wrap; margin-bottom: 20px;">
       <button type="button" style="background:#f8fafc; color:#3b82f6; border:1px solid #93c5fd; font-weight:bold;" onclick="copyReportText()">📝 상황보고 복사</button>
-      <button type="button" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-weight:bold;" onclick="openTimeline()">⏱️ 타임라인</button>
+      <button type="button" style="background:#ffffff; color:#475569; border:1px solid #94a3b8; font-weight:bold;" onclick="openTimeline()">⏱️ 타임라인</button>
       <button type="button" style="background:#ffffff; color:#10b981; border:1px solid #34d399; font-weight:bold;" onclick="captureBoard()">📷 전체 화면 캡처</button>
       <button type="button" class="danger" onclick="resetAll()">초기화 (DB 삭제)</button>
     </div>
