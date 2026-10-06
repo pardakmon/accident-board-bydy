@@ -1097,9 +1097,9 @@ function render(){
         ? 'background:rgba(255,255,255,0.9); color:#475569; border:1px solid #cbd5e1; box-shadow:0 4px 12px rgba(0,0,0,0.1);' 
         : 'background:#ef4444; color:#fff; border:none; box-shadow:0 4px 12px rgba(239,68,68,0.4);';
     
-  // 🌟 핵심: 둥둥 떠다니는 걸 멈추고, 표 아래 공간에 자연스럽게 위치하도록 스타일 변경
-    lockBtnHtml = `<div style="text-align:center; margin-top:20px; margin-bottom:8px;" data-html2canvas-ignore="true">
-       <button type="button" onclick="toggleBoardLock()" style="padding:12px 24px; font-size:14px; font-weight:800; border-radius:30px; cursor:pointer; transition:all 0.2s ease; ${lockBtnStyle}">${lockBtnText}</button>
+// 🌟 하단 둥둥 떠다니는 방식(fixed) 적용 + 모바일 하단바 및 툴바와 겹치지 않게 높이를 90px로 띄움
+    lockBtnHtml = `<div style="position:fixed; bottom:90px; left:50%; transform:translateX(-50%); z-index:9999;" data-html2canvas-ignore="true">
+       <button type="button" onclick="toggleBoardLock()" style="padding:12px 24px; font-size:14px; font-weight:800; border-radius:30px; cursor:pointer; backdrop-filter:blur(4px); transition:all 0.2s ease; ${lockBtnStyle}">${lockBtnText}</button>
     </div>`;
   }
 
@@ -1176,10 +1176,14 @@ let pInfo = [pAge, pGender].filter(Boolean).join('/');
   }
 
   html += `</tr></tbody></table>`;
+  
+  // 🌟 둥둥 떠다니는 버튼에 마지막 차량 데이터가 가려지지 않도록 표 밑에 투명한 빈 공간(90px) 추가
+  html += `<div style="height: 90px;"></div>`;
+  
   document.getElementById('boardHolder').innerHTML = html;
-
-  // 🌟 표 출력이 모두 끝난 직후(footNotes 구역)에 잠금해제 버튼을 깔끔하게 삽입
-  document.getElementById('footNotes').innerHTML = lockBtnHtml;
+  
+  // 버튼을 둥둥 띄우기로 했으므로, footNotes에 넣는 코드는 삭제(주석 처리)하거나 비웁니다.
+  // document.getElementById('footNotes').innerHTML = lockBtnHtml;
 }
 
 window.saveState = function() {
