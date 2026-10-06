@@ -1097,16 +1097,17 @@ function render(){
         ? 'background:rgba(255,255,255,0.9); color:#475569; border:1px solid #cbd5e1; box-shadow:0 4px 12px rgba(0,0,0,0.1);' 
         : 'background:#ef4444; color:#fff; border:none; box-shadow:0 4px 12px rgba(239,68,68,0.4);';
     
-    // 🌟 핵심: 하단 중앙 고정 방식(fixed) 복구 + 모바일 브라우저 메뉴바를 피하기 위해 bottom을 90px로 넉넉하게 띄움 (아이폰 하단 홈바도 자동 계산)
-    lockBtnHtml = `<div style="position:fixed; bottom:max(90px, env(safe-area-inset-bottom) + 70px); left:50%; transform:translateX(-50%); z-index:9999;" data-html2canvas-ignore="true">
-       <button type="button" onclick="toggleBoardLock()" style="padding:12px 24px; font-size:14px; font-weight:800; border-radius:30px; cursor:pointer; backdrop-filter:blur(4px); transition:all 0.2s ease; ${lockBtnStyle}">${lockBtnText}</button>
+  // 🌟 핵심: 둥둥 떠다니는 걸 멈추고, 표 아래 공간에 자연스럽게 위치하도록 스타일 변경
+    lockBtnHtml = `<div style="text-align:center; margin-top:20px; margin-bottom:8px;" data-html2canvas-ignore="true">
+       <button type="button" onclick="toggleBoardLock()" style="padding:12px 24px; font-size:14px; font-weight:800; border-radius:30px; cursor:pointer; transition:all 0.2s ease; ${lockBtnStyle}">${lockBtnText}</button>
     </div>`;
   }
-  
+
   const totalCols = vehicles.length;
   let sizeTier = totalCols <= 3 ? 'tier-lg' : (totalCols <= 5 ? 'tier-md' : 'tier-sm');
 
-  let html = lockBtnHtml + `<table class="board ${sizeTier} scroll-table"><tbody><tr>`;
+  // 🌟 표 시작 부분에서 억지로 묶어두었던 잠금버튼(lockBtnHtml) 제거
+  let html = `<table class="board ${sizeTier} scroll-table"><tbody><tr>`;
   html += `<td class="floor-cell">차량별 현황<br><span style="font-size:11.5px;font-weight:normal;color:#64748b;margin-top:6px;display:inline-block;">(칸 터치시 기록)</span></td>`;
 
   vehicles.forEach((v, idx) => {
@@ -1176,6 +1177,9 @@ let pInfo = [pAge, pGender].filter(Boolean).join('/');
 
   html += `</tr></tbody></table>`;
   document.getElementById('boardHolder').innerHTML = html;
+
+  // 🌟 표 출력이 모두 끝난 직후(footNotes 구역)에 잠금해제 버튼을 깔끔하게 삽입
+  document.getElementById('footNotes').innerHTML = lockBtnHtml;
 }
 
 window.saveState = function() {
