@@ -2,28 +2,27 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>교통사고 차량별 현황판</title>
 <style>
   :root{
     --ink:#0f172a;
     --line:#cbd5e1;
     --line-soft:#94a3b8;
-    --origin:#dc2626;     
-    --rollover:#7c3aed;     
-    --entrap:#2563eb;     
-    --evac:#16a34a;       
-    --rescue:#e11d48;       
-    --locked:#475569;       
+    --origin:#dc2626;      
+    --rollover:#7c3aed;    
+    --entrap:#2563eb;      
+    --evac:#16a34a;        
+    --rescue:#e11d48;      
+    --locked:#475569;      
     --normal:#334155;
     --panel-bg:#ffffff;
     --panel-border:#e2e8f0;
-    --accent:#ea580c;       
-    --navy:#1e293b;         
+    --accent:#ea580c;      
+    --navy:#1e293b;        
     --gold:#f59e0b;
   }
   *{box-sizing:border-box;}
-  * { touch-action: manipulation; } /* 스마트폰 화면 확대 방지 */
 
   body{
     font-family:"Malgun Gothic","맑은 고딕",sans-serif;
@@ -35,6 +34,7 @@
     z-index: 0;
   }
 
+  /* --- 캡처될 알맹이 구역 (워터마크 포함) --- */
   #captureTarget {
     position: relative;
     background: #f1f5f9;
@@ -43,6 +43,7 @@
     overflow: hidden; 
   }
   
+/* 🌟 확실하게 캡처되는 투명 도화지 (워터마크) 구역 */
   .watermark-bg {
     position: absolute !important;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -54,6 +55,7 @@
     pointer-events: none;
   }
   
+  /* 모바일에서도 작아지지 않게 min-width 적용 */
   .watermark-content {
     width: 70%; 
     min-width: 450px; 
@@ -62,6 +64,7 @@
     align-items: center;
   }
   
+  /* 알맹이 구역 안의 요소들은 워터마크보다 위로 올라오게 설정 */
   #captureTarget > * {
     position: relative;
     z-index: 1;
@@ -70,16 +73,19 @@
   .wrap{max-width:1200px;margin:0 auto; position: relative; z-index: 1;}
   h1 { font-size:26px; font-weight:700; letter-spacing:-0.5px; margin:0 0 24px; color:#1d1d1f; }
   
+  /* 부드러운 그림자와 넓은 여백의 패널 */
   .panel { background:#ffffff; border:none; border-radius:20px; padding:32px 36px; margin-bottom:24px; box-shadow:0 4px 24px rgba(0,0,0,0.04); }
   .panel h2 { font-size:18px; margin:0 0 24px; color:#1d1d1f; font-weight:700; letter-spacing:-0.3px; }
   .row { display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; margin-bottom:20px; }
   
+  /* 테두리 없이 면(Surface)으로 구분되는 기본 입력칸 */
   .field { display:flex; flex-direction:column; gap:8px; }
   .field label { font-size:12px; color:#86868b; font-weight:600; }
   .field input { padding:14px 16px; border:1px solid transparent; border-radius:12px; font-size:14.5px; width:140px; outline:none; transition:all 0.2s ease; background:#f5f5f7; color:#1d1d1f; font-weight:500; font-family:inherit; }
   .field input:focus { background:#ffffff; border-color:#0071e3; box-shadow:0 0 0 4px rgba(0, 113, 227, 0.1); }
   .field input.wide { width:260px; }
 
+  /* 교통사고 현황판 전용: 차량 설정 리스트 스타일 (애플 감성 적용) */
   .v-setup-list { display:flex; flex-direction:column; gap:16px; width:100%; margin-top:12px; }
   .v-setup-row { 
     display:flex; flex-direction:column; gap:12px; background:#f5f5f7; 
@@ -89,17 +95,20 @@
   .v-setup-inputs { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
   .v-setup-inputs > div { display:flex; align-items:center; gap:8px; }
   
+  /* 차량 설정 내부 입력칸 및 셀렉트 박스 */
   .v-setup-row select, .v-setup-row input[type=text], .v-setup-row input[type=number] {
     padding:10px 14px; border:1px solid transparent; border-radius:10px; font-size:13.5px; outline:none; background:#ffffff; color:#1d1d1f; font-weight:500; transition:all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
   }
   .v-setup-row select { cursor:pointer; }
   .v-setup-row select:focus, .v-setup-row input:focus { border-color:#0071e3; box-shadow:0 0 0 3px rgba(0, 113, 227, 0.1); }
 
+  /* 모서리가 둥근 메인 버튼 (애플 블루) */
   button { padding:14px 22px; border:none; border-radius:14px; background:#0071e3; color:#fff; font-size:14.5px; cursor:pointer; font-weight:600; letter-spacing:-0.2px; transition:all 0.2s; -webkit-tap-highlight-color: transparent; }
   button:hover { background:#0077ed; }
   button:active { transform:scale(0.97); }
   button.small { padding:8px 14px; font-size:12.5px; border-radius:10px; }
   
+  /* 서브 버튼들도 테두리 없이 배경색만으로 깔끔하게 처리 */
   button.success-outline { background:#f5f5f7; color:#1d1d1f; border:none; box-shadow:none; display:flex; align-items:center; justify-content:center; gap:4px; }
   button.success-outline:hover { background:#e8e8ed; color:#0071e3; }
   button.secondary { background:#f5f5f7; color:#1d1d1f; border:none; box-shadow:none; }
@@ -128,15 +137,19 @@
     background:linear-gradient(135deg, var(--navy), #334155);
     padding:16px 20px;border-radius:14px; box-shadow:0 4px 12px rgba(15,23,42,0.2);
   }
+  /* 🌟 flex:1 과 min-width:0 을 추가하여 오른쪽 박스를 밀어내지 못하게 막음 */
   .board-header-left { display:flex; align-items:center; gap:16px; flex:1; min-width:0; }
   .board-header .icon-badge{
     width:60px;height:60px;border-radius:50%;flex-shrink:0; background:rgba(255,255,255,0.1);
     border:2px solid rgba(255,255,255,0.2); display:flex;align-items:center;justify-content:center;
   }
   .board-header .icon-badge svg{width:36px;height:36px; fill:#fff;}
+  /* 🌟 글씨가 길면 자연스럽게 줄바꿈(word-wrap) 되도록 설정 */
   .board-header-text{text-align:left; flex:1; min-width:0;}
   .board-title{font-size:22px;font-weight:800;color:#fff;min-height:24px; line-height:1.3; word-wrap:break-word;}
+  .board-subtitle{font-size:13px;color:#cbd5e1;margin-top:4px;font-weight:600;letter-spacing:0.5px;}
 
+  /* 🌟 우측 상단 신고접수일시 표시 박스 스타일 */
   .header-dispatch-info {
     text-align: right;
     color: #ffffff;
@@ -183,7 +196,7 @@
   .p-view-item strong { color:#0f172a; font-size:13.5px;}
   .p-view-item .p-status-severe { color:var(--rescue); font-weight:800; }
   .p-view-item .p-status-mild { color:#d97706; font-weight:800; }
-  .p-view-item .p-status-treated { color:#0284c7; font-weight:700; }
+  .p-view-item .p-status-treated { color:#0284c7; font-weight:700; } /* 🌟 현장처치 파란색 표시 */
   .p-view-item .p-status-normal { color:#64748b; font-weight:600; }
   
   .origin-tag{color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;background:var(--origin);border-radius:6px;padding:4px 8px;margin-top:12px; font-size:12.5px;}
@@ -192,10 +205,11 @@
 
   #footNotes{margin-top:16px;font-size:13.5px;line-height:1.7;color:#475569;font-weight:600;}
   .toolbar{display:flex;gap:10px;margin-top:18px;justify-content:flex-end;}
-  .toolbar button { min-width: 165px; }
+  .toolbar button { min-width: 165px; } /* 🌟 PC에서 버튼 4개의 너비를 똑같이 통일 */
   .empty-hint{color:#94a3b8;font-size:14px;text-align:center;padding:40px 0;font-weight:600;}
   .credit-line{text-align:center;font-size:12px;color:#94a3b8;margin:20px 0 10px;letter-spacing:0.5px;font-weight:600;}
 
+  /* modal */
   .overlay{
     position:fixed;inset:0;background:rgba(15,23,42,0.6);
     display:flex;align-items:center;justify-content:center;z-index:10000;
@@ -232,6 +246,12 @@
     background:var(--navy);color:#fff;flex-shrink:0;
   }
 
+  /* Login Screen Styles */
+  #loginScreen {
+    position: fixed; inset: 0; background: var(--navy); 
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 20000;
+  }
   .login-box {
     background: #fff; padding: 30px; border-radius: 12px; width: 90vw; max-width: 340px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center;
@@ -268,6 +288,7 @@
     .v-setup-inputs > div { width:48%; }
     .v-setup-inputs > div.full-w { width:100%; }
     
+    /* 🌟 스마트폰 화면에서 하단 버튼 4개를 2x2 격자로 넓고 예쁘게 배치 */
     .toolbar { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px; }
     .toolbar button { width: 100%; font-size: 13px; padding: 12px 4px; word-break: keep-all; min-width: 0; margin: 0; }
   }
@@ -275,6 +296,7 @@
     .board-header { padding:20px 24px; }
     .board-header-text { display:flex; align-items:baseline; flex-wrap:wrap; column-gap:18px; row-gap:4px; }
     .board-title { font-size:32px; min-height:auto; }
+    .board-subtitle { margin-top:0; font-size:15px; }
     .board-header .icon-badge { width:64px; height:64px; }
     .board-header .icon-badge svg { width:36px; height:36px; }
   }
@@ -291,17 +313,17 @@
   .battery-tag{color:#1e293b;font-weight:900;display:flex;align-items:center;justify-content:center;gap:4px;background:#facc15;border-radius:6px;padding:4px 8px;margin-top:6px; font-size:12.5px;}
  
   @media (max-width: 640px) and (orientation: portrait) {
-    .mobile-br { display: block; }
+    .mobile-br { display: block; } /* 🌟 폰 세로에서만 줄을 바꿈 */
   }
-  .mobile-br { display: none; }
-  .board-title { word-break: keep-all; }
+  .mobile-br { display: none; } /* PC나 가로화면에서는 줄바꿈 무시 */
+  .board-title, .board-subtitle { word-break: keep-all; } /* 글자가 반토막 나지 않게 단어 단위로 묶음 */
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
 <!-- 로그인 화면 -->
-<div id="loginScreen" style="position: fixed; inset: 0; background: var(--navy); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20000;">
+<div id="loginScreen">
   <div class="login-box">
     <h2>현황판 로그인</h2>
     <div class="field">
@@ -312,7 +334,7 @@
       <label>비밀번호</label>
       <input type="password" id="loginPwd" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter') doLogin()">
     </div>
-    <div id="loginError" class="login-error" style="color: var(--rescue); font-size: 12px; margin-top: 10px; display: none; font-weight: 600;">아이디 또는 비밀번호를 확인해주세요.</div>
+    <div id="loginError" class="login-error">아이디 또는 비밀번호를 확인해주세요.</div>
     <button type="button" onclick="doLogin()">접속하기</button>
     <button type="button" class="secondary" onclick="enterSpectatorMode()" style="margin-top:12px;">👀 관전 모드 (읽기 전용)</button>
   </div>
@@ -330,6 +352,7 @@
         </div>
       </div>
 
+      <!-- 🌟 신고접수일시 입력 칸 (페이지 진입 시 현재 시간 자동 세팅) -->
       <div class="row" style="margin-top:12px;">
         <div class="field">
           <label style="font-size:12px;color:#86868b;font-weight:600;">신고접수일시 (최근접 시간 자동입력)</label>
@@ -359,19 +382,22 @@
   </div>
 
   <div id="boardScreen" style="display:none;">
-    <div class="board-topbar" style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
+    <div class="board-topbar" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
       <button type="button" class="secondary" onclick="showSetupScreen()">← 설정으로 돌아가기</button>
       <button type="button" class="secondary" onclick="doLogout()" style="color: var(--rescue); border-color: #fecdd3;">로그아웃</button>
     </div>
     
+    <!-- 📷 캡처될 내용물이 쏙 들어가는 알맹이 구역 -->
     <div id="captureTarget">
 
+      <!-- 🌟 워터마크 이미지 구역 -->
       <div class="watermark-bg">
         <div class="watermark-content">
           <img src="seoulfire.png" style="width:100%; display:block;">
         </div>
       </div>
 
+      <!-- 🌟 진한 상단바 (제목 영역 + 우측 신고접수일시) -->
       <div class="board-header">
         <div class="board-header-left">
           <div class="icon-badge" id="iconBadge">
@@ -381,8 +407,10 @@
           </div>
           <div class="board-header-text">
             <div id="titleLine" class="board-title"></div>
+            <div class="board-subtitle">교통사고 차량별<br class="mobile-br"> 현황판</div>
           </div>
         </div>
+        <!-- 우측 신고접수일시 박스 -->
         <div class="header-dispatch-info">
           <span class="dispatch-label">신고접수일시</span>
           <span class="dispatch-val" id="viewDispatchTime">-</span>
@@ -395,8 +423,9 @@
 
       <div id="footNotes"></div>
       <div id="autosaveNote" style="font-size:11px;color:#94a3b8;text-align:right;margin-top:10px;font-weight:600;"></div>
-    </div>
+    </div> <!-- 알맹이 구역 끝 -->
 
+<!-- 🌟 하단 여백(margin-bottom: 80px) 확보 -->
     <div class="toolbar" id="toolbar" style="display:none; flex-wrap: wrap; margin-bottom: 20px;">
       <button type="button" style="background:#f8fafc; color:#3b82f6; border:1px solid #93c5fd; font-weight:bold;" onclick="copyReportText()">📝 상황보고 복사</button>
       <button type="button" style="background:#ffffff; color:#475569; border:1px solid #94a3b8; font-weight:bold;" onclick="openTimeline()">⏱️ 타임라인</button>
@@ -406,43 +435,25 @@
   </div>
 </div>
 
+<!-- 🌟 타임라인 팝업창 추가 -->
 <div id="timelineOverlay" class="overlay" style="display:none; z-index:30000;">
   <div class="modal" style="width:90vw; max-width:400px;">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--navy); padding-bottom:10px; margin-bottom:12px;">
       <h3 style="margin:0; font-size:16px;">⏱️ 타임라인</h3>
       <button type="button" class="small secondary" onclick="document.getElementById('timelineOverlay').style.display='none'">닫기</button>
     </div>
-    <div id="timelineList" style="max-height:60vh; overflow-y:auto; font-size:12.5px; line-height:1.5; color:#334155;"></div>
+    <div id="timelineList" style="max-height:60vh; overflow-y:auto; font-size:12.5px; line-height:1.5; color:#334155;">
+      <!-- 기록이 여기에 쌓입니다 -->
+    </div>
   </div>
 </div>
 
-<!-- 지도 앱 선택 팝업창 -->
-<div id="mapModal" class="overlay" style="display:none; z-index:40000; align-items:flex-end;" data-html2canvas-ignore="true">
-  <div style="background:#fff; width:100%; border-radius:20px 20px 0 0; padding:24px; text-align:center; box-sizing:border-box; box-shadow: 0 -10px 25px rgba(0,0,0,0.15); animation: slideUp 0.3s ease-out;">
-    <h3 style="margin-top:0; color:var(--navy); font-size:18px; font-weight:800;">지도 어플 선택</h3>
-    <p id="targetAddress" style="color:#64748b; margin-bottom:20px; font-size:14px; font-weight:600;">주소가 여기에 표시됩니다</p>
-    
-    <button onclick="openMapApp('kakao')" style="width:100%; padding:16px; margin-bottom:12px; border:none; border-radius:12px; background:#FEE500; color:#000; font-weight:900; font-size:16px; cursor:pointer; box-shadow:0 4px 6px rgba(254, 229, 0, 0.3);">
-      카카오맵으로 열기
-    </button>
-    
-    <button onclick="openMapApp('naver')" style="width:100%; padding:16px; margin-bottom:12px; border:none; border-radius:12px; background:#03C75A; color:#fff; font-weight:900; font-size:16px; cursor:pointer; box-shadow:0 4px 6px rgba(3, 199, 90, 0.3);">
-      네이버지도로 열기
-    </button>
-    
-    <button onclick="closeMapModal()" style="width:100%; padding:16px; border:none; border-radius:12px; background:#f1f5f9; color:#475569; font-weight:800; font-size:15px; cursor:pointer;">
-      취소
-    </button>
-  </div>
-</div>
-<style>
-  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-</style>
-
+<!-- ========== [파이어베이스 SDK] ========== -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
+<!-- ========== [자바스크립트 통합 로직] ========== -->
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyCZYW1_R1_rYa3_Ds83tfBD5AN7XVx7PHc",
@@ -475,6 +486,7 @@ const STATUS_OPTIONS = [
 ];
 const AMBULANCE_OPTIONS = ['미선택', '영등포1', '영등포2', '여의도1', '당산1', '대림1', '대림2', '신길1', '기타'];
 
+// --- [페이지 열릴 당시의 현재 시간을 신고접수일시에 자동 세팅] ---
 window.addEventListener('DOMContentLoaded', () => {
   const now = new Date();
   const yyyy = now.getFullYear();
@@ -490,6 +502,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// --- [인증 및 로그인 처리] ---
 auth.onAuthStateChanged(user => {
   if (user) {
     isSpectator = false;
@@ -502,6 +515,7 @@ auth.onAuthStateChanged(user => {
     `;
     const resetBtn = document.querySelector('button.danger');
     if(resetBtn) resetBtn.style.display = 'inline-block';
+    document.querySelector('.board-subtitle').innerHTML = '교통사고 차량별 현황판';
     
     startDatabaseListener();
   } else {
@@ -536,6 +550,7 @@ function doLogout() {
   }
 }
 
+// 🌟 보안: 오늘 날짜(월+일 4자리)로 자동 생성되는 암호
 function getDailyPin() {
   const today = new Date();
   const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -545,21 +560,27 @@ function getDailyPin() {
 
 function enterSpectatorMode() {
   const dailyPin = getDailyPin();
+  
+  // 🌟 힌트와 예시를 삭제하고 단호하게 변경
   const pwd = prompt("👀 관전 모드 접속 암호를 입력하세요.\n(모르실 경우 지휘차 또는 조사팀에 문의하세요)");
   
+  // 취소를 누르거나 암호가 틀리면 차단
   if(pwd !== dailyPin) { 
     alert("❌ 암호가 일치하지 않아 접근이 차단됩니다.");
     return; 
   }
 
+  // 암호가 맞으면 화면을 띄워줌
   isSpectator = true;
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('mainWrap').style.display = 'block';
   
-  document.querySelector('.board-topbar').innerHTML = '<button type="button" class="secondary" onclick="location.reload()">로그인 화면으로 가기</button> <span style="color:#ea580c; font-weight:800; font-size:14px; margin-left:12px; align-self:center;">👀 관전 모드</span>';
+  document.querySelector('.board-topbar').innerHTML = '<button type="button" class="secondary" onclick="location.reload()">로그인 화면으로 가기</button>';
   
   const resetBtn = document.querySelector('button.danger');
   if(resetBtn) resetBtn.style.display = 'none';
+
+  document.querySelector('.board-subtitle').innerHTML = '교통사고 차량별 현황판 <span style="color:#ea580c; font-weight:800;">[관전 모드]</span>';
 
   startDatabaseListener();
   showBoardScreen();
@@ -597,6 +618,7 @@ function captureBoard() {
       toolbar.style.display = 'flex';
       topbar.style.display = 'flex';
 
+      // 이미지 데이터 생성 후 팝업 띄우지 않고 바로 공유 함수 호출
       const imgData = canvas.toDataURL('image/png');
       shareCapturedImage(imgData);
 
@@ -611,7 +633,9 @@ function captureBoard() {
   }, 100); 
 }
 
+// PC와 모바일을 구분하여 가장 편한 방식으로 공유해주는 업그레이드 함수 (교통사고 전용 - 시간 자동 추가)
 async function shareCapturedImage(dataUrl) {
+  // 1. 캡처 버튼을 누른 현재 시간으로 겹치지 않는 파일명 만들기 (예: 20261002_084530)
   const now = new Date();
   const yyyy = now.getFullYear();
   const mm = String(now.getMonth() + 1).padStart(2, '0');
@@ -621,10 +645,14 @@ async function shareCapturedImage(dataUrl) {
   const ss = String(now.getSeconds()).padStart(2, '0');
   const timeString = `${yyyy}${mm}${dd}_${hh}${min}${ss}`;
   
+  // 파일명 완성 (예: 교통사고현황판_20261002_084530.png)
   const fileName = `교통사고현황판_${timeString}.png`;
+  
+  // 모바일 기기인지 확인
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   
   if (navigator.share && isMobile) {
+    // [스마트폰 환경] 터치 한 번에 카카오톡/사진첩 공유 창 띄우기
     try {
       const res = await fetch(dataUrl);
       const blob = await res.blob();
@@ -634,17 +662,20 @@ async function shareCapturedImage(dataUrl) {
       console.log('공유 취소 또는 에러:', error);
     }
   } else {
+    // [PC 환경] 1. 파일 다운로드 실행 (시간이 적힌 파일명으로 다운로드됨)
     const link = document.createElement('a');
     link.href = dataUrl;
     link.download = fileName; 
     link.click(); 
     
+    // [PC 환경] 2. 카카오톡 바로 붙여넣기를 위한 클립보드 복사
     try {
       const res = await fetch(dataUrl);
       const blob = await res.blob();
       const item = new ClipboardItem({ "image/png": blob });
       await navigator.clipboard.write([item]);
       
+      // 안내창에 바뀐 파일명도 함께 띄워줌
       alert(`✅ 캡처 완료!\n[${fileName}]\n저장 및 복사가 완료되었습니다.\n\nPC 카카오톡 채팅창에 '붙여넣기(Ctrl + V)'를 하시면 바로 전송됩니다.`);
     } catch (err) {
       alert(`✅ 캡처 이미지가 [다운로드] 폴더에 [${fileName}] 이름으로 저장되었습니다.`);
@@ -793,8 +824,9 @@ function handleDobChange(pIdx, val) {
   }
 }
 
+// 🌟 [신규] 나이 직접 입력 시 생년월일(YYYY0101) 자동 역산 로직
 function handleAgeChange(pIdx, val) {
-  val = val.replace(/[^0-9]/g, ''); 
+  val = val.replace(/[^0-9]/g, ''); // 숫자만 입력되게 필터링
   const inputEl = document.getElementById(`age_input_${pIdx}`);
   if(inputEl) inputEl.value = val;
   
@@ -804,6 +836,7 @@ function handleAgeChange(pIdx, val) {
     const currentYear = new Date().getFullYear();
     const ageNum = parseInt(val, 10);
     
+    // 올해 연도에서 나이를 빼서 출생연도를 구하고, '0101'을 무조건 붙임
     const birthYear = currentYear - ageNum;
     const generatedDob = birthYear + "0101"; 
     
@@ -811,6 +844,7 @@ function handleAgeChange(pIdx, val) {
     const dobEl = document.getElementById(`dob_input_${pIdx}`);
     if(dobEl) dobEl.value = generatedDob;
   } else {
+    // 나이 칸을 싹 지우면 생년월일 칸도 깔끔하게 초기화
     vehicles[editingIdx].persons[pIdx].birthDate = '';
     const dobEl = document.getElementById(`dob_input_${pIdx}`);
     if(dobEl) dobEl.value = '';
@@ -851,6 +885,7 @@ function openEditor(idx){
         <label style="color:#ca8a04; font-weight:800;"><input type="checkbox" id="m_battery" ${v.batteryDisconnect?'checked':''}> 🔌 배터리차단</label>
       </div>
 
+      <!-- 🌟 추가: 팝업창 내 탑승 인원수 조절 버튼 -->
       <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--navy); padding-bottom:8px; margin-bottom:12px;">
         <label style="font-size:15px; color:var(--navy); margin:0;">탑승자 개별 입력</label>
         <div class="stepper-row">
@@ -881,14 +916,13 @@ function renderModalPassengers(){
     box.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px;">입력된 탑승 인원이 없습니다.</div>`;
     return;
   }
-  
-  // 🌟 (오류 해결 지점) \vert 로 깨졌던 코드를 정상적인 자바스크립트 '||'(또는) 기호로 복구했습니다.
-  box.innerHTML = personsArr.map((p, pIdx) => `
+box.innerHTML = personsArr.map((p, pIdx) => `
     <div class="p-form-card">
       <div class="p-form-header"><span style="font-weight:900;">${pIdx === 0 ? '👤 운전자' : '👤 탑승자 ' + (pIdx+1)}</span></div>
       <div class="p-form-row">
         <div class="flex-lg"><label>이름</label><input type="text" placeholder="${pIdx === 0 ? '이름 (운전자)' : '이름'}" value="${p.name}" oninput="updatePerson(${pIdx}, 'name', this.value)"></div>
         <div class="flex-lg"><label>생년월일</label><input type="text" inputmode="numeric" maxlength="8" id="dob_input_${pIdx}" placeholder="예)19900101" value="${p.birthDate || ''}" oninput="handleDobChange(${pIdx}, this.value)"></div>
+        <!-- 🌟 만 나이 입력칸: readonly 속성을 지우고, 색상을 하얗게 만들고, oninput 이벤트(직접 입력 감지)를 추가했습니다 -->
         <div class="flex-sm"><label>만 나이</label><input type="text" inputmode="numeric" maxlength="3" id="age_input_${pIdx}" placeholder="나이 입력" value="${p.age}" oninput="handleAgeChange(${pIdx}, this.value)"></div>
         <div class="flex-sm"><label>성별</label>
           <select onchange="updatePerson(${pIdx}, 'gender', this.value)">
@@ -896,7 +930,7 @@ function renderModalPassengers(){
           </select>
         </div>
       </div>
-      <div class="p-form-row">
+<div class="p-form-row">
         <div style="flex:1;"><label>부상정도</label>
           <select onchange="updatePerson(${pIdx}, 'status', this.value)" style="${p.status==='severe'?'color:#e11d48;font-weight:bold;':(p.status==='dead'?'color:#475569;font-weight:bold;':'')}; padding:10px 4px;">
             ${STATUS_OPTIONS.map(opt => `<option value="${opt.val}" ${p.status===opt.val?'selected':''}>${opt.label}</option>`).join('')}
@@ -904,7 +938,7 @@ function renderModalPassengers(){
         </div>
         <div style="flex:1.1;"><label>구급대</label>
           <select onchange="updatePerson(${pIdx}, 'ambulance', this.value)" style="padding:10px 4px; color:#1e40af; font-weight:600;">
-            ${AMBULANCE_OPTIONS.map(opt => `<option value="${opt}" ${(p.ambulance \vert{}\vert{} '미선택')===opt?'selected':''}>${opt}</option>`).join('')}
+            ${AMBULANCE_OPTIONS.map(opt => `<option value="${opt}" ${(p.ambulance||'미선택')===opt?'selected':''}>${opt}</option>`).join('')}
           </select>
         </div>
         <div style="flex:1.4;"><label>병원이송 기록</label><input type="text" placeholder="예: 성모병원" value="${p.hospital}" oninput="updatePerson(${pIdx}, 'hospital', this.value)" style="padding:10px 6px;"></div>
@@ -917,9 +951,11 @@ function updatePerson(pIdx, field, value){ vehicles[editingIdx].persons[pIdx][fi
 function closeEditor(){ const o = document.getElementById('editorOverlay'); if(o) o.remove(); editingIdx = null; }
 
 function saveEditor(){
+  // 🌟 입력칸에서 수정한 차량 이름/번호를 가져와서 저장 (다 지우면 기본값 세팅)
   const newPlate = document.getElementById('m_plate').value.trim();
   vehicles[editingIdx].plate = newPlate ? newPlate : "미상 (차량" + (editingIdx + 1) + ")";
   
+  // 🌟 팝업창에서 수정한 차종과 연료 업데이트
   vehicles[editingIdx].type = document.getElementById('m_type').value;
   vehicles[editingIdx].fuel = document.getElementById('m_fuel').value;
 
@@ -929,6 +965,7 @@ function saveEditor(){
   vehicles[editingIdx].rollover = document.getElementById('m_rollover').checked;
   vehicles[editingIdx].entrap = document.getElementById('m_entrap').checked;
   
+  // 🌟 (추가) 차량 정보 수정 시 타임라인 자동 기록
   writeLog('차량 현황 수정', `${vehicles[editingIdx].plate} 상세 정보 업데이트`);
 
   closeEditor();
@@ -944,6 +981,7 @@ window.__cellClick = function(idx){
   openEditor(idx); 
 };
 
+// 🌟 [추가] 현황판 차량 추가/삭제 잠금 상태
 let isBoardLocked = true;
 
 function toggleBoardLock() {
@@ -952,6 +990,7 @@ function toggleBoardLock() {
   render();
 }
 
+// 🌟 [추가] 현황판에서 직접 차량 통째로 추가하기
 function addVehicleToBoard() {
   if(isSpectator) return;
   const nextId = vehicles.length + 1;
@@ -971,6 +1010,7 @@ function addVehicleToBoard() {
   };
   vehicles.push(newV);
   
+  // 설정 화면 쪽 데이터도 같이 동기화
   setupVehicles.push({ type: '승용', customType: '', fuel: '휘발유', plate: '', passengers: 1 });
   document.getElementById('vehicleCount').value = vehicles.length;
   renderSetupVehicles();
@@ -979,6 +1019,7 @@ function addVehicleToBoard() {
   render();
 }
 
+// 🌟 [추가] 현황판에서 맨 마지막 차량 통째로 삭제하기
 function removeVehicleFromBoard() {
   if(isSpectator || vehicles.length <= 1) return alert("더 이상 삭제할 수 없습니다.");
   if(confirm(`가장 마지막 차량(차량${vehicles.length})을 현황판에서 완전히 삭제하시겠습니까?`)) {
@@ -992,35 +1033,36 @@ function removeVehicleFromBoard() {
   }
 }
 
+// 🌟 [추가] 팝업창에서 탑승 인원 증감 조절하기
 function adjModalPassenger(delta) {
   const v = vehicles[editingIdx];
   let p = v.passengers + delta;
   if(p < 0) p = 0;
   
+  // 인원수가 늘어나면 빈 사람 데이터 추가
   while(v.persons.length < p) {
     v.persons.push({ name: '', birthDate: '', age: '', gender: '남', status: 'normal', hospital: '' });
   }
+  // 인원수가 줄어들면 사람 데이터 삭제
   if(v.persons.length > p) {
     v.persons.length = p;
   }
   
   v.passengers = p;
-  setupVehicles[editingIdx].passengers = p; 
+  setupVehicles[editingIdx].passengers = p; // 초기 설정 데이터도 동기화
   
+  // 팝업창 숫자 즉시 업데이트
   document.getElementById('m_passengerCount').innerText = p;
+  // 밑의 상세 정보 입력칸 다시 그리기
   renderModalPassengers();
 }
 
 function render(){
   document.getElementById('toolbar').style.display='flex';
   const name = document.getElementById('accidentName').value.trim();
+  document.getElementById('titleLine').innerHTML = name || '교통사고<br class="mobile-br"> 현황';
 
-  if (name) {
-    document.getElementById('titleLine').innerHTML = `${name} <span onclick="showMapModal('${name.replace(/'/g, "\\'")}')" style="display:inline-block; font-size:14px; font-weight:800; color:#fff; background:rgba(255,255,255,0.25); border:1px solid rgba(255,255,255,0.4); padding:4px 10px; border-radius:12px; margin-left:8px; cursor:pointer; vertical-align:middle; transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.25)'">🗺️ 지도/로드뷰</span>`;
-  } else {
-    document.getElementById('titleLine').innerHTML = '교통사고<br class="mobile-br"> 현황';
-  }
-
+  // 🌟 신고접수일시 데이터를 상단바 화면에 반영
   const dTime = document.getElementById('dispatchTime').value.trim();
   document.getElementById('viewDispatchTime').textContent = dTime || '-';
 
@@ -1045,14 +1087,18 @@ function render(){
     <div class="stat-card severe"><div class="num">${severeCount}</div><div class="label">중상(명)</div></div>
   `;
 
+  // 🌟 추가: 수정 잠금 토글 버튼 렌더링
   let lockBtnHtml = '';
 
   if (!isSpectator) {
     const lockBtnText = isBoardLocked ? '🔒 차량 수정 잠금해제' : '🔓 수정 완료 (터치하여 잠금)';
+    
+    // 원래의 반투명하고 둥근 예쁜 디자인 복구
     const lockBtnStyle = isBoardLocked 
         ? 'background:rgba(255,255,255,0.9); color:#475569; border:1px solid #cbd5e1; box-shadow:0 4px 12px rgba(0,0,0,0.1);' 
         : 'background:#ef4444; color:#fff; border:none; box-shadow:0 4px 12px rgba(239,68,68,0.4);';
     
+// 🌟 공동주택 현황판과 완전히 동일한 위치(bottom: 24px)로 고정
     lockBtnHtml = `<div style="position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:9999;" data-html2canvas-ignore="true">
        <button type="button" onclick="toggleBoardLock()" style="padding:12px 24px; font-size:14px; font-weight:800; border-radius:30px; cursor:pointer; backdrop-filter:blur(4px); transition:all 0.2s ease; ${lockBtnStyle}">${lockBtnText}</button>
     </div>`;
@@ -1061,13 +1107,15 @@ function render(){
   const totalCols = vehicles.length;
   let sizeTier = totalCols <= 3 ? 'tier-lg' : (totalCols <= 5 ? 'tier-md' : 'tier-sm');
 
+  // 🌟 모바일 잘림 방지를 위해 lockBtnHtml을 여기서 뺐습니다.
   let html = `<table class="board ${sizeTier} scroll-table"><tbody><tr>`;
   html += `<td class="floor-cell">차량별 현황<br><span style="font-size:11.5px;font-weight:normal;color:#64748b;margin-top:6px;display:inline-block;">(칸 터치시 기록)</span></td>`;
 
   vehicles.forEach((v, idx) => {
     const displayType = v.type === '기타' ? (v.customType || '기타') : v.type;
-    let pListHtml = '';
+let pListHtml = '';
     
+    // 🌟 파이어베이스 빈 배열 에러 방어막 추가
     const personsArr = v.persons || [];
     
     if(personsArr.length === 0){
@@ -1075,9 +1123,12 @@ function render(){
     } else {
       pListHtml = personsArr.map((p, i) => {
         let statusCls = `p-status-${p.status}`;
+        
+        // 🌟 과거 데이터 충돌 시 뻗지 않도록 방어막 추가
         let statusObj = STATUS_OPTIONS.find(opt => opt.val === p.status) || STATUS_OPTIONS[0];
         let statusText = statusObj.label;
         
+        // 🌟 [핵심] 첫 번째(i===0)는 무조건 운전자, 나머지는 탑승자로 표기
         let pName = '';
         if (i === 0) {
           pName = p.name ? `운전자(${p.name})` : '운전자';
@@ -1087,9 +1138,10 @@ function render(){
         
         let pAge = p.age ? `${p.age}세` : '';
         let pGender = p.gender;
-        let pInfo = [pAge, pGender].filter(Boolean).join('/');
+let pInfo = [pAge, pGender].filter(Boolean).join('/');
         if(pInfo) pInfo = `(${pInfo})`;
         
+        // 🌟 구급대와 병원 텍스트를 조합해서 한 줄에 출력
         let ambText = (p.ambulance && p.ambulance !== '미선택') ? `🚑${p.ambulance} ` : '';
         let hospText = p.hospital ? `🏥${p.hospital}` : '';
         let extInfo = ambText + hospText;
@@ -1116,6 +1168,7 @@ function render(){
     </td>`;
   });
 
+  // 🌟 추가: 잠금 해제 상태일 때 가장 오른쪽에 차량 추가/삭제 칸 띄우기
   if (!isSpectator && !isBoardLocked) {
       html += `<td style="vertical-align:middle; text-align:center; padding:0 12px; font-size:18px; background:rgba(241,245,249,0.7); border:2px dashed #cbd5e1; min-width:80px;">
         <div onclick="addVehicleToBoard()" style="cursor:pointer; color:#0ea5e9; font-weight:800; margin-bottom:28px; padding:8px; border:1px solid #7dd3fc; border-radius:8px; background:#e0f2fe;" title="새 차량 추가">➕ 차량<br>추가</div>
@@ -1123,19 +1176,24 @@ function render(){
       </td>`;
   }
 
-  html += `</tr></tbody></table>`;
+html += `</tr></tbody></table>`;
+  
+  // 🌟 표 먼저 렌더링 완료
   document.getElementById('boardHolder').innerHTML = html;
 
+// 🌟 iOS 세로화면 잘림 현상 완벽 해결: 표 안쪽이 아닌 현황판 화면(boardScreen) 안에 버튼을 띄움
   let safeBtnArea = document.getElementById('safeLockBtnArea');
   if(!safeBtnArea) {
     safeBtnArea = document.createElement('div');
     safeBtnArea.id = 'safeLockBtnArea';
+    // 🌟 body(전체 화면) 대신 boardScreen(현황판 화면)에만 버튼을 붙여넣어 설정 화면에서는 숨깁니다!
     document.getElementById('boardScreen').appendChild(safeBtnArea);
   }
   safeBtnArea.innerHTML = `<div style="height: 40px;"></div>` + lockBtnHtml;
 }
 
 window.saveState = function() {
+
   try {
     const state = {
       accidentName: document.getElementById('accidentName').value,
@@ -1152,7 +1210,6 @@ window.saveState = function() {
 };
 
 function startDatabaseListener() {
-  if(isListening) return; // 🌟 중복 실행 방지 안전장치 추가
   isListening = true;
   boardRef.on('value', (snapshot) => {
     const data = snapshot.val();
@@ -1166,6 +1223,7 @@ function startDatabaseListener() {
       if(typeof renderSetupVehicles === 'function') renderSetupVehicles();
       if(typeof render === 'function') render();
       
+      // 🌟 다른 사람이 만든 현황판 데이터가 존재하면, 생성 화면을 숨기고 즉시 현황판으로 이동!
       if (vehicles.length > 0 && document.getElementById('setupScreen').style.display !== 'none') {
         showBoardScreen();
       }
@@ -1182,6 +1240,13 @@ function startDatabaseListener() {
   });
 }
 
+window.addEventListener('DOMContentLoaded', ()=>{
+  // 초기 렌더링 대기
+});
+
+// ==========================================
+// 🌟 [추가 기능 1] 상황보고 텍스트 자동 요약 (차량별 분리형)
+// ==========================================
 function copyReportText() {
   const bldg = document.getElementById('accidentName').value || '장소 미상';
   const dTime = document.getElementById('dispatchTime').value || '시간 미상';
@@ -1189,6 +1254,7 @@ function copyReportText() {
   let totalVehicles = vehicles.length;
   let totalPersons = 0, totalSevere = 0, totalMild = 0, totalTreated = 0, totalNormal = 0;
 
+  // 1. 전체 통계 집계
   vehicles.forEach(v => {
     (v.persons || []).forEach(p => {
       totalPersons++;
@@ -1199,6 +1265,7 @@ function copyReportText() {
     });
   });
 
+  // 2. 전체 요약 작성
   let report = `[상황보고] ${bldg}\n`;
   report += `- 신고일시: ${dTime}\n`;
   report += `- 전체상황: 차량 ${totalVehicles}대 / 탑승 총 ${totalPersons}명\n`;
@@ -1214,10 +1281,12 @@ function copyReportText() {
 
   report += `[차량별 현황]\n`;
 
+  // 3. 차량별 상세 내역 작성
   vehicles.forEach((v, idx) => {
     let vType = v.type === '기타' ? (v.customType || '기타') : v.type;
     
-    let vEmoji = '🚗'; 
+    // 🌟 차종별 맞춤 이모티콘 설정
+    let vEmoji = '🚗'; // 기본 승용차
     if(v.type === '버스') vEmoji = '🚌';
     else if(v.type === '화물') vEmoji = '🚚';
     else if(v.type === '택시') vEmoji = '🚕';
@@ -1227,6 +1296,7 @@ function copyReportText() {
 
     report += `${vEmoji} 차량${idx+1} (${vType} / ${v.fuel} / ${v.plate})\n`;
     
+    // 개별 차량 인원 집계
     let pSevere = 0, pMild = 0, pTreated = 0, pNormal = 0;
     (v.persons || []).forEach(p => {
       if(p.status === 'severe') pSevere++;
@@ -1243,19 +1313,20 @@ function copyReportText() {
     
     report += ` · 탑승: ${v.passengers}명 ${pDetails.length > 0 ? '('+pDetails.join(', ')+')' : ''}\n`;
 
+    // 개별 차량 특이사항 집계
     let specs = [];
     if(v.fire) specs.push('🔥화재발생');
     if(v.rollover) specs.push('🔄전복');
-    if(v.entrap) specs.push('⚙끼임');
+    if(v.entrap) specs.push('⚙️️끼임');
     
     if(specs.length > 0) {
       report += ` · 특이: ${specs.join(', ')}\n`;
     }
-    report += `\n`; 
+    report += `\n`; // 차량과 차량 사이 빈칸
   });
 
   const ta = document.createElement("textarea");
-  ta.value = report.trim(); 
+  ta.value = report.trim(); // 맨 끝에 남는 쓸데없는 빈칸 제거
   document.body.appendChild(ta);
   ta.select();
   document.execCommand("copy");
@@ -1264,7 +1335,10 @@ function copyReportText() {
   alert("✅ 상황보고 텍스트가 복사되었습니다.");
 }
 
-const logRef = db.ref('accident_board/logs');
+// ==========================================
+// 🌟 [추가 기능 2] 타임라인 기록 및 조회 (교통사고용)
+// ==========================================
+const logRef = db.ref('accident_board/logs'); // 데이터베이스 덮어쓰기 방지
 
 function writeLog(actionType, message) {
   if (typeof isSpectator !== 'undefined' && isSpectator) return;
@@ -1300,39 +1374,6 @@ function openTimeline() {
       </div>
     `).join('');
   });
-}
-
-let currentMapAddress = ""; 
-
-function showMapModal(address) {
-  currentMapAddress = address.replace(' 화재', '').replace(' 사고', '').replace(' 교통사고', '').trim();
-  document.getElementById('targetAddress').innerText = currentMapAddress + "\n(현장 및 주변 로드뷰 확인)"; 
-  document.getElementById('mapModal').style.display = 'flex';
-}
-
-function closeMapModal() {
-  document.getElementById('mapModal').style.display = 'none';
-}
-
-function openMapApp(appType) {
-  const encodedAddress = encodeURIComponent(currentMapAddress); 
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  
-  if (isMobile) {
-    if (appType === 'kakao') {
-      window.location.href = `kakaomap://search?q=${encodedAddress}`;
-    } else if (appType === 'naver') {
-      window.location.href = `nmap://search?query=${encodedAddress}&appname=fireboard`;
-    }
-  } else {
-    if (appType === 'kakao') {
-      window.open(`https://map.kakao.com/link/search/${encodedAddress}`, '_blank');
-    } else if (appType === 'naver') {
-      window.open(`https://map.naver.com/p/search/${encodedAddress}`, '_blank');
-    }
-  }
-  
-  closeMapModal(); 
 }
 </script>
 </body>
