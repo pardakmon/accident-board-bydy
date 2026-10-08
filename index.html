@@ -408,7 +408,6 @@
           </div>
           <div class="board-header-text">
             <div id="titleLine" class="board-title"></div>
-            <div class="board-subtitle">교통사고 차량별<br class="mobile-br"> 현황판</div>
           </div>
         </div>
         <!-- 우측 신고접수일시 박스 -->
@@ -516,7 +515,6 @@ auth.onAuthStateChanged(user => {
     `;
     const resetBtn = document.querySelector('button.danger');
     if(resetBtn) resetBtn.style.display = 'inline-block';
-    document.querySelector('.board-subtitle').innerHTML = '교통사고 차량별 현황판';
     
     startDatabaseListener();
   } else {
@@ -580,8 +578,6 @@ function enterSpectatorMode() {
   
   const resetBtn = document.querySelector('button.danger');
   if(resetBtn) resetBtn.style.display = 'none';
-
-  document.querySelector('.board-subtitle').innerHTML = '교통사고 차량별 현황판 <span style="color:#ea580c; font-weight:800;">[관전 모드]</span>';
 
   startDatabaseListener();
   showBoardScreen();
