@@ -319,10 +319,6 @@
   .board-title, .board-subtitle { word-break: keep-all; } /* 글자가 반토막 나지 않게 단어 단위로 묶음 */
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1e293b">
-
-  <link rel="apple-touch-icon" href="icon-512.png">
 </head>
 <body>
 
@@ -1379,12 +1375,6 @@ function openTimeline() {
     `).join('');
   });
 }
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js');
-      });
-    }
-  </script>
+</script>
 </body>
 </html>
