@@ -448,6 +448,28 @@
   </div>
 </div>
 
+<div id="mapModal" class="overlay" style="display:none; z-index:40000; align-items:flex-end;" data-html2canvas-ignore="true">
+  <div style="background:#fff; width:100%; border-radius:20px 20px 0 0; padding:24px; text-align:center; box-sizing:border-box; box-shadow: 0 -10px 25px rgba(0,0,0,0.15); animation: slideUp 0.3s ease-out;">
+    <h3 style="margin-top:0; color:var(--navy); font-size:18px; font-weight:800;">지도 어플 선택</h3>
+    <p id="targetAddress" style="color:#64748b; margin-bottom:20px; font-size:14px; font-weight:600;">주소가 여기에 표시됩니다</p>
+    
+    <button onclick="openMapApp('kakao')" style="width:100%; padding:16px; margin-bottom:12px; border:none; border-radius:12px; background:#FEE500; color:#000; font-weight:900; font-size:16px; cursor:pointer; box-shadow:0 4px 6px rgba(254, 229, 0, 0.3);">
+      카카오맵으로 열기
+    </button>
+    
+    <button onclick="openMapApp('naver')" style="width:100%; padding:16px; margin-bottom:12px; border:none; border-radius:12px; background:#03C75A; color:#fff; font-weight:900; font-size:16px; cursor:pointer; box-shadow:0 4px 6px rgba(3, 199, 90, 0.3);">
+      네이버지도로 열기
+    </button>
+    
+    <button onclick="closeMapModal()" style="width:100%; padding:16px; border:none; border-radius:12px; background:#f1f5f9; color:#475569; font-weight:800; font-size:15px; cursor:pointer;">
+      취소
+    </button>
+  </div>
+</div>
+<style>
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+</style>
+
 <!-- ========== [파이어베이스 SDK] ========== -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
