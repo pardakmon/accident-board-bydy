@@ -1079,7 +1079,12 @@ function adjModalPassenger(delta) {
 function render(){
   document.getElementById('toolbar').style.display='flex';
   const name = document.getElementById('accidentName').value.trim();
-  document.getElementById('titleLine').innerHTML = name || '교통사고<br class="mobile-br"> 현황';
+
+if (name) {
+    document.getElementById('titleLine').innerHTML = `${name} <span onclick="showMapModal('${name.replace(/'/g, "\\'")}')" style="display:inline-block; font-size:14px; font-weight:800; color:#fff; background:rgba(255,255,255,0.25); border:1px solid rgba(255,255,255,0.4); padding:4px 10px; border-radius:12px; margin-left:8px; cursor:pointer; vertical-align:middle; transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.25)'">🗺️ 지도/로드뷰</span>`;
+  } else {
+    document.getElementById('titleLine').innerHTML = '교통사고<br class="mobile-br"> 현황';
+  }
 
   // 🌟 신고접수일시 데이터를 상단바 화면에 반영
   const dTime = document.getElementById('dispatchTime').value.trim();
@@ -1409,7 +1414,43 @@ document.addEventListener('touchend', function(event) {
   }
   lastTouchEnd = now;
 }, { passive: false });
+
+let currentMapAddress = ""; 
+
+function showMapModal(address) {
+  // '화재', '사고' 등의 단어가 있으면 지도 검색이 꼬일 수 있으므로 제거
+  currentMapAddress = address.replace(' 화재', '').replace(' 사고', '').replace(' 교통사고', '').trim();
+  document.getElementById('targetAddress').innerText = currentMapAddress + "\n(현장 및 주변 로드뷰 확인)"; 
+  document.getElementById('mapModal').style.display = 'flex';
+}
+
+function closeMapModal() {
+  document.getElementById('mapModal').style.display = 'none';
+}
+
+function openMapApp(appType) {
+  const encodedAddress = encodeURIComponent(currentMapAddress); 
+  // 🌟 현재 접속한 기기가 모바일(스마트폰)인지 PC인지 확인
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   
+  if (isMobile) {
+    // 📱 [스마트폰] 진짜 '지도 어플'을 깨워서 실행
+    if (appType === 'kakao') {
+      window.location.href = `kakaomap://search?q=${encodedAddress}`;
+    } else if (appType === 'naver') {
+      window.location.href = `nmap://search?query=${encodedAddress}&appname=fireboard`;
+    }
+  } else {
+    // 💻 [PC 컴퓨터] 인터넷 브라우저 '새 탭'으로 지도 웹사이트 접속
+    if (appType === 'kakao') {
+      window.open(`https://map.kakao.com/link/search/${encodedAddress}`, '_blank');
+    } else if (appType === 'naver') {
+      window.open(`https://map.naver.com/p/search/${encodedAddress}`, '_blank');
+    }
+  }
+  
+  closeMapModal(); 
+}  
 </script>
 </body>
 </html>
