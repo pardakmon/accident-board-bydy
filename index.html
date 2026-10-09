@@ -210,6 +210,33 @@
   .empty-hint{color:#94a3b8;font-size:14px;text-align:center;padding:40px 0;font-weight:600;}
   .credit-line{text-align:center;font-size:12px;color:#94a3b8;margin:20px 0 10px;letter-spacing:0.5px;font-weight:600;}
 
+  /* 🌟 상단바: 줄바꿈 없이 한 줄로 깔끔하게 배치 */
+  .board-topbar { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 8px; 
+    flex-wrap: nowrap; 
+    gap: 6px; 
+    overflow-x: auto; 
+    scrollbar-width: none; 
+  }
+  .board-topbar::-webkit-scrollbar { display: none; }
+  .board-topbar button { 
+    padding: 8px 12px !important; 
+    font-size: 13px !important; 
+    border-radius: 10px !important; 
+    white-space: nowrap !important; 
+    flex-shrink: 0; 
+  }
+
+  @media (max-width: 640px) {
+    .board-topbar button {
+      padding: 6px 9px !important;
+      font-size: 11.5px !important;
+    }
+  }
+
   /* modal */
   .overlay{
     position:fixed;inset:0;background:rgba(15,23,42,0.6);
@@ -396,7 +423,7 @@
   </div>
 
   <div id="boardScreen" style="display:none;">
-    <div class="board-topbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1px; flex-wrap: wrap; gap: 8px;">
+    <div class="board-topbar">
       <button type="button" class="secondary" id="btnBackToSetup" onclick="showSetupScreen()">← 설정으로 돌아가기</button>
 
       <!-- 👇 [추가] 관리자(admin) 전용 승인 관리 버튼 👇 -->
